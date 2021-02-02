@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 func main() {
 	// db := initDatabase()
 
@@ -9,6 +11,7 @@ func main() {
 	// 	fmt.Println(value.offer_id, value.name, value.price, value.quantity, value.available)
 	// }
 
-	readDataFromXLSX(".\\Excel\\Exel.xlsx")
+	products := readDataFromXLSX(".\\Excel\\Exel.xlsx")
+	fmt.Println(products[0].price)
 
 }
