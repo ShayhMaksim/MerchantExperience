@@ -7,7 +7,7 @@ type rensponsibility struct {
 	product product
 }
 
-// Получение всех товаров из БД
+// Получение вьхи продавцов и товаров из БД
 func getViewRensposibility(db *sql.DB) []rensponsibility {
 	m_lrensposibility := []rensponsibility{}
 	rows, err := db.Query("select * from responsibility")
