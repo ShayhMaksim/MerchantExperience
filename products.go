@@ -4,6 +4,7 @@ import (
 	"database/sql"
 )
 
+// Структура данных для товаров из БД
 type product struct {
 	offer_id  uint
 	name      string
@@ -12,6 +13,7 @@ type product struct {
 	available bool
 }
 
+// Получение всех товаров из БД
 func getAllData(db *sql.DB) []product {
 	products := []product{}
 	rows, err := db.Query("select * from products")
