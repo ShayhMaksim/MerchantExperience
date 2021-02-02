@@ -9,6 +9,6 @@ func main() {
 	// 	fmt.Println(value.offer_id, value.name, value.price, value.quantity, value.available)
 	// }
 
-	readDataFromXLSX("/Exсel/Exсel.xlsx")
+	readDataFromXLSX(".\\Excel\\Exel.xlsx")
 
 }
