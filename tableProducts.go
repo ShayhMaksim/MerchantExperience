@@ -14,7 +14,7 @@ type product struct {
 }
 
 // Получение всех товаров из БД
-func getAllData(db *sql.DB) []product {
+func getAllProducts(db *sql.DB) []product {
 	products := []product{}
 	rows, err := db.Query("select * from products")
 	checkErr(err)
