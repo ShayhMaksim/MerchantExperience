@@ -1,1 +1,0 @@
-INSERT INTO sellers VALUES (1, 1)
