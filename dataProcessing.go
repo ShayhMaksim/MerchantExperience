@@ -1,4 +1,4 @@
-package main
+package MerchantExperience
 
 import (
 	"database/sql"
@@ -19,7 +19,7 @@ func readDataFromXLSX(exelFileName string) []product {
 		fmt.Println(&sheet)
 		for row := 0; row != sheet.MaxRow; row++ {
 
-			//На тот случай, если у нас данные сдвинуты в таблицу по строке
+			//На тот случай, если у нас данные сдвинуты в таблице по строке
 			position := 0
 			loffer_id, _ := sheet.Cell(row, position+0)
 			for loffer_id == nil {
@@ -77,7 +77,7 @@ func deleteProducts(db *sql.DB, seller_id uint, products []product) {
 	}
 }
 
-//Добавление новых данных в БД
+//Обновление данных в БД
 func updateProducts(db *sql.DB, products []product) {
 	for _, value := range products {
 		productExec, err := db.Exec("update products set name=$2, price=$3, quantity=$4, available=$5 where offer_id=$1",
@@ -85,4 +85,20 @@ func updateProducts(db *sql.DB, products []product) {
 		checkErr(err)
 		fmt.Println(productExec.RowsAffected())
 	}
+}
+
+//Общее обновление согласно поданным данным
+func delegateRequest(db *sql.DB, seller_id uint, products []product) {
+	addForProducts := []product{}
+	updateForProducts := []product{}
+	Rensposibility := getViewRensposibility(db)
+	for _, value := range products {
+		if value.offer_id == Rensposibility.offer_id {
+			updateForProducts = append(updateForProducts, value)
+		} else {
+			addForProducts = append(addForProducts, value)
+		}
+	}
+	updateProducts(db, updateForProducts)
+	addProducts(db, addForProducts)
 }

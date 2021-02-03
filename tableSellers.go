@@ -1,4 +1,4 @@
-package main
+package MerchantExperience
 
 import "database/sql"
 
