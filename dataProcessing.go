@@ -89,8 +89,8 @@ func isCorrect(loffer_id, lname, lprice, lquantity, lavailable string) xlsxData 
 }
 
 //почему-то Баг с отсутсвием row до сих пор не пофиксили -_-
-func readDataFromXLSX(exelFileName string) []product {
-	products := []product{}
+func readDataFromXLSX(exelFileName string) []xlsxData {
+	xlsxDatas := []xlsxData{}
 
 	xlFile, err := xlsx.OpenFile(exelFileName)
 	checkErr(err)
@@ -111,21 +111,11 @@ func readDataFromXLSX(exelFileName string) []product {
 			lquantity, _ := sheet.Cell(row, position+3)
 			lavailable, _ := sheet.Cell(row, position+4)
 
-			offer_id, _ := strconv.ParseUint(loffer_id.Value, 10, 32)
-			name := string(lname.Value)
-			price, _ := strconv.ParseFloat(strings.Split(lprice.Value, "р.")[0], 32)
-			quantity, _ := strconv.ParseInt(lquantity.Value, 10, 32)
-			available, _ := strconv.ParseBool(lavailable.Value)
-
-			products = append(products, product{
-				offer_id:  uint(offer_id),
-				name:      name,
-				price:     float32(price),
-				quantity:  int(quantity),
-				available: available})
+			xlsxData := isCorrect(loffer_id.Value, lname.Value, lprice.Value, lquantity.Value, lavailable.Value)
+			xlsxDatas = append(xlsxDatas, xlsxData)
 		}
 	}
-	return products
+	return xlsxDatas
 }
 
 //Добавление новых данных в БД
