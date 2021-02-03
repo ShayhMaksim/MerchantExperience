@@ -9,6 +9,19 @@ import (
 	"github.com/tealeg/xlsx"
 )
 
+//краткая статистика
+// added - количество созданных товаров
+// updated - количество обновленных товаров
+// deleted - количество удаленных товаров
+// wrong - количество неправильных строк
+type declaration struct {
+	added uint
+	updated uint
+	deleted uint
+	wrong uint
+}
+
+
 //почему-то Баг с отсутсвием row до сих пор не пофиксили -_-
 func readDataFromXLSX(exelFileName string) []product {
 	products := []product{}
@@ -92,12 +105,13 @@ func delegateRequest(db *sql.DB, seller_id uint, products []product) {
 	addForProducts := []product{}
 	updateForProducts := []product{}
 	deleteForProducts := []product{}
+	rowMistake:=0
 	rensponsibilities := getViewResposibility(db)
 	for _, value := range products {
 
 		for _, valueR := range rensponsibilities {
 			if valueR.product.offer_id == value.offer_id {
-
+				if valueR.product.
 			}
 		}
 
