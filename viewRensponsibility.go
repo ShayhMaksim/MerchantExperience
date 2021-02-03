@@ -19,9 +19,9 @@ func getViewRensposibility(db *sql.DB) []rensponsibility {
 		var name string
 		var price float32
 		var quantity int
-		var available bool
+		var available bool = true
 
-		err = rows.Scan(&seller_id, &offer_id, &name, &price, &quantity, &available)
+		err = rows.Scan(&seller_id, &offer_id, &name, &price, &quantity)
 		m_lrensposibility = append(m_lrensposibility,
 			rensponsibility{
 				seller: seller{

@@ -24,9 +24,9 @@ func getAllProducts(db *sql.DB) []product {
 		var name string
 		var price float32
 		var quantity int
-		var available bool
+		var available bool = true
 
-		err = rows.Scan(&offer_id, &name, &price, &quantity, &available)
+		err = rows.Scan(&offer_id, &name, &price, &quantity)
 		products = append(products,
 			product{
 				offer_id:  offer_id,

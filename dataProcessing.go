@@ -91,14 +91,22 @@ func updateProducts(db *sql.DB, products []product) {
 func delegateRequest(db *sql.DB, seller_id uint, products []product) {
 	addForProducts := []product{}
 	updateForProducts := []product{}
-	rensponsibilitys := getViewRensposibility(db)
+	deleteForProducts := []product{}
+	rensponsibilities := getViewResposibility(db)
 	for _, value := range products {
-		if value.offer_id == rensponsibilitys.offer_id {
-			updateForProducts = append(updateForProducts, value)
-		} else {
-			addForProducts = append(addForProducts, value)
+
+		for _, valueR := range rensponsibilities {
+			if valueR.product.offer_id == value.offer_id {
+
+			}
 		}
+
+		updateForProducts = append(updateForProducts, value)
+
+		addForProducts = append(addForProducts, value)
+
 	}
 	updateProducts(db, updateForProducts)
 	addProducts(db, addForProducts)
+	deleteProducts(db, deleteForProducts)
 }
