@@ -1,6 +1,7 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"strconv"
 	"strings"
@@ -17,22 +18,13 @@ func readDataFromXLSX(exelFileName string) []product {
 	for _, sheet := range xlFile.Sheets {
 		fmt.Println(&sheet)
 		for row := 0; row != sheet.MaxRow; row++ {
-			// for col := 0; col < sheet.MaxCol; col++ {
-			// 	text, err := sheet.Cell(row, col)
-			// }
 
-			// var offer_id uint
-			// var name string
-			// var price float32
-			// var quantity int
-			// var available bool
-
+			//На тот случай, если у нас данные сдвинуты в таблицу по строке
 			position := 0
 			loffer_id, _ := sheet.Cell(row, position+0)
-
 			for loffer_id == nil {
 				position++
-			} 
+			}
 
 			// loffer_id, _ := sheet.Cell(row, position+0)
 			lname, _ := sheet.Cell(row, position+1)
@@ -55,5 +47,42 @@ func readDataFromXLSX(exelFileName string) []product {
 		}
 	}
 	return products
+}
 
+//Добавление новых данных в БД
+func addProducts(db *sql.DB, seller_id uint, products []product) {
+	for _, value := range products {
+		productExec, err := db.Exec("insert into products (offer_id, name, price, quantity, available) values ($1, $2, $3, $4, $5)",
+			value.offer_id, value.name, value.price, value.quantity, value.available)
+		checkErr(err)
+		fmt.Println(productExec.RowsAffected())
+		sellerExec, err := db.Exec("insert into sellers (seller_id,offer_id) values ($1, $2)",
+			seller_id, value.offer_id)
+		checkErr(err)
+		fmt.Println(sellerExec.RowsAffected())
+	}
+}
+
+//удаление данных из БД
+func deleteProducts(db *sql.DB, seller_id uint, products []product) {
+	for _, value := range products {
+		productExec, err := db.Exec("delete from products where offer_id=$1",
+			value.offer_id)
+		checkErr(err)
+		fmt.Println(productExec.RowsAffected())
+		sellerExec, err := db.Exec("delete from sellers where  seller_id=$1 and offer_id=$2",
+			seller_id, value.offer_id)
+		checkErr(err)
+		fmt.Println(sellerExec.RowsAffected())
+	}
+}
+
+//Добавление новых данных в БД
+func updateProducts(db *sql.DB, products []product) {
+	for _, value := range products {
+		productExec, err := db.Exec("update products set name=$2, price=$3, quantity=$4, available=$5 where offer_id=$1",
+			value.offer_id, value.name, value.price, value.quantity, value.available)
+		checkErr(err)
+		fmt.Println(productExec.RowsAffected())
+	}
 }
