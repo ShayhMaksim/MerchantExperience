@@ -1,8 +1,9 @@
-package MerchantExperience
+package main
 
 import (
 	"database/sql"
 	"fmt"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -15,12 +16,77 @@ import (
 // deleted - количество удаленных товаров
 // wrong - количество неправильных строк
 type declaration struct {
-	added uint
+	added   uint
 	updated uint
 	deleted uint
-	wrong uint
+	wrong   uint
 }
 
+// структура, возвращающая результат с проверкой на корректность данных
+type xlsxData struct {
+	product product
+	correct bool
+}
+
+//проверка на корректность считанных данных
+func isCorrect(loffer_id, lname, lprice, lquantity, lavailable string) xlsxData {
+
+	isCorrect := true
+	prod := product{}
+	//проверка на положительность чисел
+	matched, err := regexp.MatchString("^[0-9]+$", loffer_id)
+	checkErr(err)
+	if matched == false {
+		isCorrect = false
+		prod.offer_id = 0
+	} else {
+		offer_id, _ := strconv.ParseUint(loffer_id, 10, 32)
+		prod.offer_id = uint(offer_id)
+	}
+
+	//проверка на отсутсвите в начале чисел (товар не должен начинаться с чисел?)
+	matched, err = regexp.MatchString("^[A-Za-z]+", lname)
+	checkErr(err)
+	if matched == false {
+		isCorrect = false
+		prod.name = ""
+	} else {
+		prod.name = string(lname)
+	}
+
+	//проверка на отсутствие знаков и букв лишних в числе с плаваюещей точкой
+	lprice_value := strings.Split(lprice, "р.")[0]
+	matched, err = regexp.MatchString("^[0-9]*[.]?[0-9]+$", lprice_value)
+	checkErr(err)
+	if matched == false {
+		isCorrect = false
+		prod.price = 0
+	} else {
+		price, _ := strconv.ParseFloat(lprice_value, 32)
+		prod.price = float32(price)
+	}
+
+	//проверка на положительность чисел
+	matched, err = regexp.MatchString("^[0-9]+$", lquantity)
+	checkErr(err)
+	if matched == false {
+		isCorrect = false
+		prod.quantity = 0
+	} else {
+		quantity, _ := strconv.ParseInt(lquantity, 10, 32)
+		prod.quantity = int(quantity)
+	}
+
+	//проверка на правильной записи типа bool
+	if (lavailable != "true") || (lavailable != "false") {
+		isCorrect = false
+		prod.available = false //??
+	} else {
+		available, _ := strconv.ParseBool(lavailable)
+		prod.available = available
+	}
+	return xlsxData{prod, isCorrect}
+}
 
 //почему-то Баг с отсутсвием row до сих пор не пофиксили -_-
 func readDataFromXLSX(exelFileName string) []product {
@@ -101,26 +167,24 @@ func updateProducts(db *sql.DB, products []product) {
 }
 
 //Общее обновление согласно поданным данным
-func delegateRequest(db *sql.DB, seller_id uint, products []product) {
-	addForProducts := []product{}
-	updateForProducts := []product{}
-	deleteForProducts := []product{}
-	rowMistake:=0
-	rensponsibilities := getViewResposibility(db)
-	for _, value := range products {
+// func delegateRequest(db *sql.DB, seller_id uint, products []product) {
+// 	addForProducts := []product{}
+// 	updateForProducts := []product{}
+// 	deleteForProducts := []product{}
+// 	rowMistake := 0
+// 	rensponsibilities := getViewRensposibility(db)
+// 	for _, value := range products {
 
-		for _, valueR := range rensponsibilities {
-			if valueR.product.offer_id == value.offer_id {
-				if valueR.product.
-			}
-		}
+// 		for _, valueR := range rensponsibilities {
+// 			if valueR.product.offer_id == value.offer_id {
 
-		updateForProducts = append(updateForProducts, value)
+// 			}
+// 		}
 
-		addForProducts = append(addForProducts, value)
-
-	}
-	updateProducts(db, updateForProducts)
-	addProducts(db, addForProducts)
-	deleteProducts(db, deleteForProducts)
-}
+// 		updateForProducts = append(updateForProducts, value)
+// 		addForProducts = append(addForProducts, value)
+// 	}
+// 	// updateProducts(db, updateForProducts)
+// 	// addProducts(db, addForProducts)
+// 	// deleteProducts(db, deleteForProducts)
+// }
