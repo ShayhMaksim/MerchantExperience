@@ -52,8 +52,8 @@ func readDataFromXLSX(exelFileName string) []product {
 //Добавление новых данных в БД
 func addProducts(db *sql.DB, seller_id uint, products []product) {
 	for _, value := range products {
-		productExec, err := db.Exec("insert into products (offer_id, name, price, quantity, available) values ($1, $2, $3, $4, $5)",
-			value.offer_id, value.name, value.price, value.quantity, value.available)
+		productExec, err := db.Exec("insert into products (offer_id, name, price, quantity) values ($1, $2, $3, $4)",
+			value.offer_id, value.name, value.price, value.quantity)
 		checkErr(err)
 		fmt.Println(productExec.RowsAffected())
 		sellerExec, err := db.Exec("insert into sellers (seller_id,offer_id) values ($1, $2)",
@@ -80,8 +80,8 @@ func deleteProducts(db *sql.DB, seller_id uint, products []product) {
 //Обновление данных в БД
 func updateProducts(db *sql.DB, products []product) {
 	for _, value := range products {
-		productExec, err := db.Exec("update products set name=$2, price=$3, quantity=$4, available=$5 where offer_id=$1",
-			value.offer_id, value.name, value.price, value.quantity, value.available)
+		productExec, err := db.Exec("update products set name=$2, price=$3, quantity=$4 where offer_id=$1",
+			value.offer_id, value.name, value.price, value.quantity)
 		checkErr(err)
 		fmt.Println(productExec.RowsAffected())
 	}
@@ -91,9 +91,9 @@ func updateProducts(db *sql.DB, products []product) {
 func delegateRequest(db *sql.DB, seller_id uint, products []product) {
 	addForProducts := []product{}
 	updateForProducts := []product{}
-	Rensposibility := getViewRensposibility(db)
+	rensponsibilitys := getViewRensposibility(db)
 	for _, value := range products {
-		if value.offer_id == Rensposibility.offer_id {
+		if value.offer_id == rensponsibilitys.offer_id {
 			updateForProducts = append(updateForProducts, value)
 		} else {
 			addForProducts = append(addForProducts, value)
