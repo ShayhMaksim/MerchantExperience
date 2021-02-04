@@ -157,24 +157,54 @@ func updateProducts(db *sql.DB, products []product) {
 }
 
 //Общее обновление согласно поданным данным
-// func delegateRequest(db *sql.DB, seller_id uint, products []product) {
-// 	addForProducts := []product{}
-// 	updateForProducts := []product{}
-// 	deleteForProducts := []product{}
-// 	rowMistake := 0
-// 	rensponsibilities := getViewRensposibility(db)
-// 	for _, value := range products {
+func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) {
+	addForProducts := []product{}
+	updateForProducts := []product{}
+	deleteForProducts := []product{}
+	rensponsibilities := getViewRensposibility(db)
+	wrong := 0
 
-// 		for _, valueR := range rensponsibilities {
-// 			if valueR.product.offer_id == value.offer_id {
+	for _, value := range products {
+		isUpdated := false //проверка на обновление данных
 
-// 			}
-// 		}
+		//проверка на корректность данных
+		if value.correct == false {
+			wrong++
+			continue
+		}
 
-// 		updateForProducts = append(updateForProducts, value)
-// 		addForProducts = append(addForProducts, value)
-// 	}
-// 	// updateProducts(db, updateForProducts)
-// 	// addProducts(db, addForProducts)
-// 	// deleteProducts(db, deleteForProducts)
-// }
+		//обновление данных
+		for _, rensponsibility := range rensponsibilities {
+			if rensponsibility.product.offer_id == value.product.offer_id {
+				//обновление данных
+				updatedProduct := product{}
+				if value.product.available == false {
+					updatedProduct.quantity = rensponsibility.product.quantity - value.product.quantity
+					if updatedProduct.quantity > 0 {
+						//если товаров больше 0, то просто обновляем данные
+						updatedProduct.offer_id = rensponsibility.product.offer_id
+						updatedProduct.name = rensponsibility.product.name
+						updatedProduct.price = rensponsibility.product.price
+						updatedProduct.available = true
+						updateForProducts = append(updateForProducts, updatedProduct)
+					} else if updatedProduct.quantity == 0 {
+						// если товаров не осталось, то нужно просто удалить из БД
+						deleteForProducts = append(deleteForProducts, rensponsibility.product)
+					} else if updatedProduct.quantity < 0 {
+						//если в excel указано, что у нас больше товаров идет на удаление, то тут какая-то ошибка
+						wrong++
+					}
+				}
+				isUpdated = true
+				break
+			}
+		}
+
+		if isUpdated == false {
+			addForProducts = append(addForProducts, value)
+		}
+	}
+	// updateProducts(db, updateForProducts)
+	// addProducts(db, addForProducts)
+	// deleteProducts(db, deleteForProducts)
+}
