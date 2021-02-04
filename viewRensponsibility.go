@@ -1,6 +1,9 @@
 package main
 
-import "database/sql"
+import (
+	"database/sql"
+	"strconv"
+)
 
 type rensponsibility struct {
 	seller  seller
@@ -103,4 +106,53 @@ func updateProducts(db *sql.DB, products []product) uint {
 		updated += uint(result)
 	}
 	return updated
+}
+
+//Получение куска данных из БД
+func localSelect(db *sql.DB, seller_id uint, offer_id uint, name string) []rensponsibility {
+	m_lrensposibility := []rensponsibility{}
+
+	var rows *sql.Rows
+	var err error
+
+	query := string("select * from responsibility where name like '" + name + "%'")
+
+	seller_id_str := strconv.FormatUint(uint64(seller_id), 10)
+	offer_id_str := strconv.FormatUint(uint64(offer_id), 10)
+
+	if seller_id != 0 {
+		query += " and seller_id=" + seller_id_str
+	}
+	if offer_id != 0 {
+		query += " and offer_id=" + offer_id_str
+	}
+
+	rows, err = db.Query(query)
+
+	checkErr(err)
+	for rows.Next() {
+
+		var seller_id uint
+		var offer_id uint
+		var name string
+		var price float32
+		var quantity int
+		var available bool = true
+
+		err = rows.Scan(&seller_id, &offer_id, &name, &price, &quantity)
+		m_lrensposibility = append(m_lrensposibility,
+			rensponsibility{
+				seller: seller{
+					seller_id: seller_id,
+					offer_id:  offer_id,
+				},
+				product: product{
+					offer_id:  offer_id,
+					name:      name,
+					price:     price,
+					quantity:  quantity,
+					available: available,
+				}})
+	}
+	return m_lrensposibility
 }
