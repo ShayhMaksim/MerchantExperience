@@ -178,6 +178,11 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) {
 			if rensponsibility.product.offer_id == value.product.offer_id {
 				//обновление данных
 				updatedProduct := product{}
+				if value.product.available == true {
+					//особый случай, сигнализирующий, что нужно будет поменять данные в названиях
+
+				}
+
 				if value.product.available == false {
 					updatedProduct.quantity = rensponsibility.product.quantity - value.product.quantity
 					if updatedProduct.quantity > 0 {
@@ -207,4 +212,15 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) {
 	// updateProducts(db, updateForProducts)
 	// addProducts(db, addForProducts)
 	// deleteProducts(db, deleteForProducts)
+}
+
+func compareData(dbProduct, excelProduct product) bool {
+	isSimilar := true
+	if dbProduct.name != excelProduct.name {
+		isSimilar = false
+	}
+	if dbProduct.price != excelProduct.price {
+		isSimilar = false
+	}
+	return isSimilar
 }
