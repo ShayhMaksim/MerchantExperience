@@ -118,72 +118,14 @@ func readDataFromXLSX(exelFileName string) []xlsxData {
 	return xlsxDatas
 }
 
-//Добавление новых данных в БД
-func addProducts(db *sql.DB, seller_id uint, products []product) uint {
-	var added uint = 0 //счетчик добавленных строк
-	lenght := len(products)
-	if lenght == 0 {
-		return added
-	}
-
-	//мне кажется, что лучше составить один большой текстовый запрос
-	for _, value := range products {
-		productExec, err := db.Exec("insert into products (offer_id, name, price, quantity) values ($1, $2, $3, $4)",
-			value.offer_id, value.name, value.price, value.quantity)
-		checkErr(err)
-		result, _ := productExec.RowsAffected()
-		added += uint(result)
-		sellerExec, err := db.Exec("insert into sellers (seller_id,offer_id) values ($1, $2)",
-			seller_id, value.offer_id)
-		checkErr(err)
-		_, _ = sellerExec.RowsAffected()
-	}
-	return added
-}
-
-//удаление данных из БД
-func deleteProducts(db *sql.DB, seller_id uint, products []product) uint {
-	var deleted uint = 0 // счетчик удаленных товаров
-	lenght := len(products)
-	if lenght == 0 {
-		return deleted
-	}
-
-	for _, value := range products {
-		productExec, err := db.Exec("delete from products where offer_id=$1",
-			value.offer_id)
-		checkErr(err)
-
-		result, _ := productExec.RowsAffected()
-		deleted += uint(result)
-		sellerExec, err := db.Exec("delete from sellers where  seller_id=$1 and offer_id=$2",
-			seller_id, value.offer_id)
-		checkErr(err)
-		_, _ = sellerExec.RowsAffected()
-	}
-
-	return deleted
-}
-
-//Обновление данных в БД
-func updateProducts(db *sql.DB, products []product) uint {
-	var updated uint = 0 // счетчик обновленных товаров
-	lenght := len(products)
-	if lenght == 0 {
-		return updated
-	}
-
-	for _, value := range products {
-		productExec, err := db.Exec("update products set name=$2, price=$3, quantity=$4 where offer_id=$1",
-			value.offer_id, value.name, value.price, value.quantity)
-		checkErr(err)
-		result, _ := productExec.RowsAffected()
-		updated += uint(result)
-	}
-	return updated
-}
-
-//Общее обновление согласно поданным данным
+/*
+Общее обновление согласно поданным данным;
+   declaration - статистика по данным:
+added - добавлено
+updated - обновлено
+deleted - удалено
+wrong - ошиблись
+*/
 func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) declaration {
 	addForProducts := []product{}
 	updateForProducts := []product{}
