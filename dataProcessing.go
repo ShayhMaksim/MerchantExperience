@@ -163,7 +163,7 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) declaratio
 					updateForProducts = append(updateForProducts, updatedProduct)
 				}
 
-				if value.product.available {
+				if value.product.available == false {
 					updatedProduct.quantity = rensponsibility.product.quantity - value.product.quantity
 					if updatedProduct.quantity > 0 {
 						//если товаров больше 0, то просто обновляем данные
