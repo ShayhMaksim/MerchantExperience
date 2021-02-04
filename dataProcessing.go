@@ -186,7 +186,11 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) declaratio
 		}
 
 		if isUpdated == false {
-			addForProducts = append(addForProducts, value.product)
+			if value.product.available == true {
+				addForProducts = append(addForProducts, value.product)
+			} else {
+				wrong++
+			}
 		}
 	}
 
