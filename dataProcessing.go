@@ -45,7 +45,7 @@ func isCorrect(loffer_id, lname, lprice, lquantity, lavailable string) xlsxData 
 	}
 
 	//проверка на отсутсвите в начале чисел (товар не должен начинаться с чисел?)
-	matched, err = regexp.MatchString("^[A-Za-z]+", lname)
+	matched, err = regexp.MatchString("^[a-zA-ZА-Яа-я]+", lname)
 	checkErr(err)
 	if matched == false {
 		isCorrect = false
@@ -55,8 +55,12 @@ func isCorrect(loffer_id, lname, lprice, lquantity, lavailable string) xlsxData 
 	}
 
 	//проверка на отсутствие знаков и букв лишних в числе с плаваюещей точкой
-	lprice_value := strings.Split(lprice, "р.")[0]
-	matched, err = regexp.MatchString("^[0-9]*[.]?[0-9]+$", lprice_value)
+
+	r := regexp.MustCompile("\\s+")
+	replace := r.ReplaceAllString(lprice, "")
+	lprice_value := strings.Split(string(replace), "р.")[0]
+
+	matched, err = regexp.MatchString("^[0-9]*[.,]?[0-9]+$", lprice_value)
 	checkErr(err)
 	if matched == false {
 		isCorrect = false
@@ -78,7 +82,7 @@ func isCorrect(loffer_id, lname, lprice, lquantity, lavailable string) xlsxData 
 	}
 
 	//проверка на правильной записи типа bool
-	if (lavailable != "true") || (lavailable != "false") {
+	if (lavailable != "true") && (lavailable != "false") {
 		isCorrect = false
 		prod.available = false //??
 	} else {
@@ -130,7 +134,7 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) declaratio
 	addForProducts := []product{}
 	updateForProducts := []product{}
 	deleteForProducts := []product{}
-	rensponsibilities := getViewRensposibility(db)
+	//rensponsibilities := getViewRensposibility(db)
 	var wrong uint = 0
 
 	for _, value := range products {
@@ -141,6 +145,8 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) declaratio
 			wrong++
 			continue
 		}
+
+		rensponsibilities := localSelect(db, seller_id, value.product.offer_id, value.product.name)
 
 		//обновление данных происходит в том случае, если указанный id продавца совпадает с id продавца из БД
 		for _, rensponsibility := range rensponsibilities {
@@ -175,7 +181,7 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) declaratio
 					}
 				}
 				isUpdated = true
-				break
+				//break
 			}
 		}
 
