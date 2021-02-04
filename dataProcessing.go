@@ -184,12 +184,12 @@ func updateProducts(db *sql.DB, products []product) uint {
 }
 
 //Общее обновление согласно поданным данным
-func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) {
+func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) declaration {
 	addForProducts := []product{}
 	updateForProducts := []product{}
 	deleteForProducts := []product{}
 	rensponsibilities := getViewRensposibility(db)
-	wrong := 0
+	var wrong uint = 0
 
 	for _, value := range products {
 		isUpdated := false //проверка на обновление данных
@@ -200,9 +200,9 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) {
 			continue
 		}
 
-		//обновление данных
+		//обновление данных происходит в том случае, если указанный id продавца совпадает с id продавца из БД
 		for _, rensponsibility := range rensponsibilities {
-			if rensponsibility.product.offer_id == value.product.offer_id {
+			if rensponsibility.seller.offer_id == value.product.offer_id && seller_id == rensponsibility.seller.seller_id {
 				//обновление данных
 				updatedProduct := product{}
 				if value.product.available == true {
@@ -241,9 +241,19 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) {
 			addForProducts = append(addForProducts, value.product)
 		}
 	}
-	// updateProducts(db, updateForProducts)
-	// addProducts(db, addForProducts)
-	// deleteProducts(db, deleteForProducts)
+
+	added := addProducts(db, seller_id, addForProducts)
+	updated := updateProducts(db, updateForProducts)
+	deleted := deleteProducts(db, seller_id, deleteForProducts)
+
+	declaration := declaration{
+		added:   added,
+		updated: updated,
+		deleted: deleted,
+		wrong:   wrong,
+	}
+
+	return declaration
 }
 
 //глубокая идея с подменой данных
