@@ -119,41 +119,68 @@ func readDataFromXLSX(exelFileName string) []xlsxData {
 }
 
 //Добавление новых данных в БД
-func addProducts(db *sql.DB, seller_id uint, products []product) {
+func addProducts(db *sql.DB, seller_id uint, products []product) uint {
+	var added uint = 0 //счетчик добавленных строк
+	lenght := len(products)
+	if lenght == 0 {
+		return added
+	}
+
+	//мне кажется, что лучше составить один большой текстовый запрос
 	for _, value := range products {
 		productExec, err := db.Exec("insert into products (offer_id, name, price, quantity) values ($1, $2, $3, $4)",
 			value.offer_id, value.name, value.price, value.quantity)
 		checkErr(err)
-		fmt.Println(productExec.RowsAffected())
+		result, _ := productExec.RowsAffected()
+		added += uint(result)
 		sellerExec, err := db.Exec("insert into sellers (seller_id,offer_id) values ($1, $2)",
 			seller_id, value.offer_id)
 		checkErr(err)
-		fmt.Println(sellerExec.RowsAffected())
+		_, _ = sellerExec.RowsAffected()
 	}
+	return added
 }
 
 //удаление данных из БД
-func deleteProducts(db *sql.DB, seller_id uint, products []product) {
+func deleteProducts(db *sql.DB, seller_id uint, products []product) uint {
+	var deleted uint = 0 // счетчик удаленных товаров
+	lenght := len(products)
+	if lenght == 0 {
+		return deleted
+	}
+
 	for _, value := range products {
 		productExec, err := db.Exec("delete from products where offer_id=$1",
 			value.offer_id)
 		checkErr(err)
-		fmt.Println(productExec.RowsAffected())
+
+		result, _ := productExec.RowsAffected()
+		deleted += uint(result)
 		sellerExec, err := db.Exec("delete from sellers where  seller_id=$1 and offer_id=$2",
 			seller_id, value.offer_id)
 		checkErr(err)
-		fmt.Println(sellerExec.RowsAffected())
+		_, _ = sellerExec.RowsAffected()
 	}
+
+	return deleted
 }
 
 //Обновление данных в БД
-func updateProducts(db *sql.DB, products []product) {
+func updateProducts(db *sql.DB, products []product) uint {
+	var updated uint = 0 // счетчик обновленных товаров
+	lenght := len(products)
+	if lenght == 0 {
+		return updated
+	}
+
 	for _, value := range products {
 		productExec, err := db.Exec("update products set name=$2, price=$3, quantity=$4 where offer_id=$1",
 			value.offer_id, value.name, value.price, value.quantity)
 		checkErr(err)
-		fmt.Println(productExec.RowsAffected())
+		result, _ := productExec.RowsAffected()
+		updated += uint(result)
 	}
+	return updated
 }
 
 //Общее обновление согласно поданным данным
@@ -179,18 +206,23 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) {
 				//обновление данных
 				updatedProduct := product{}
 				if value.product.available == true {
-					//особый случай, сигнализирующий, что нужно будет поменять данные в названиях
-
+					//просто занимаемся сложением данных
+					updatedProduct.quantity = rensponsibility.product.quantity + value.product.quantity
+					updatedProduct.offer_id = value.product.offer_id
+					updatedProduct.name = value.product.name
+					updatedProduct.price = value.product.price
+					updatedProduct.available = true
+					updateForProducts = append(updateForProducts, updatedProduct)
 				}
 
-				if value.product.available == false {
+				if value.product.available {
 					updatedProduct.quantity = rensponsibility.product.quantity - value.product.quantity
 					if updatedProduct.quantity > 0 {
 						//если товаров больше 0, то просто обновляем данные
-						updatedProduct.offer_id = rensponsibility.product.offer_id
-						updatedProduct.name = rensponsibility.product.name
-						updatedProduct.price = rensponsibility.product.price
-						updatedProduct.available = true
+						updatedProduct.offer_id = value.product.offer_id
+						updatedProduct.name = value.product.name
+						updatedProduct.price = value.product.price
+						updatedProduct.available = value.product.available
 						updateForProducts = append(updateForProducts, updatedProduct)
 					} else if updatedProduct.quantity == 0 {
 						// если товаров не осталось, то нужно просто удалить из БД
@@ -206,7 +238,7 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) {
 		}
 
 		if isUpdated == false {
-			addForProducts = append(addForProducts, value)
+			addForProducts = append(addForProducts, value.product)
 		}
 	}
 	// updateProducts(db, updateForProducts)
@@ -214,7 +246,8 @@ func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) {
 	// deleteProducts(db, deleteForProducts)
 }
 
-func compareData(dbProduct, excelProduct product) bool {
+//глубокая идея с подменой данных
+func isSimilar(dbProduct, excelProduct product) bool {
 	isSimilar := true
 	if dbProduct.name != excelProduct.name {
 		isSimilar = false
