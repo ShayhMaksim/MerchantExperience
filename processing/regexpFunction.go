@@ -11,7 +11,7 @@ func IsCorrectOfferId(loffer_id string) (uint64, bool) {
 	var offer_id uint64
 	var errStr error
 	var isCorrect bool = true
-	matched, err := regexp.MatchString("^[0-9]+$", loffer_id)
+	matched, err := regexp.MatchString("^[1-9][0-9]+$", loffer_id)
 	checkErr(err)
 	if matched == false {
 		isCorrect = false
