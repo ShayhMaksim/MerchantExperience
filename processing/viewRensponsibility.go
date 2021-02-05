@@ -11,7 +11,7 @@ type rensponsibility struct {
 }
 
 // Получение вьхи продавцов и товаров из БД
-func getViewRensposibility(db *sql.DB) []rensponsibility {
+func GetViewRensposibility(db *sql.DB) []rensponsibility {
 	m_lrensposibility := []rensponsibility{}
 	rows, err := db.Query("select * from responsibility")
 	checkErr(err)
@@ -44,7 +44,7 @@ func getViewRensposibility(db *sql.DB) []rensponsibility {
 }
 
 //Добавление новых данных в БД
-func addProducts(db *sql.DB, seller_id uint64, products []product) uint {
+func AddProducts(db *sql.DB, seller_id uint64, products []product) uint {
 	var added uint = 0 //счетчик добавленных строк
 	lenght := len(products)
 	if lenght == 0 {
@@ -67,7 +67,7 @@ func addProducts(db *sql.DB, seller_id uint64, products []product) uint {
 }
 
 //удаление данных из БД
-func deleteProducts(db *sql.DB, seller_id uint64, products []product) uint {
+func DeleteProducts(db *sql.DB, seller_id uint64, products []product) uint {
 	var deleted uint = 0 // счетчик удаленных товаров
 	lenght := len(products)
 	if lenght == 0 {
@@ -91,7 +91,7 @@ func deleteProducts(db *sql.DB, seller_id uint64, products []product) uint {
 }
 
 //Обновление данных в БД
-func updateProducts(db *sql.DB, products []product) uint {
+func UpdateProducts(db *sql.DB, products []product) uint {
 	var updated uint = 0 // счетчик обновленных товаров
 	lenght := len(products)
 	if lenght == 0 {
@@ -109,7 +109,7 @@ func updateProducts(db *sql.DB, products []product) uint {
 }
 
 //Получение куска данных из БД
-func localSelect(db *sql.DB, seller_id uint64, offer_id uint64, name string) []rensponsibility {
+func LocalSelect(db *sql.DB, seller_id uint64, offer_id uint64, name string) []rensponsibility {
 	m_lrensposibility := []rensponsibility{}
 
 	var rows *sql.Rows

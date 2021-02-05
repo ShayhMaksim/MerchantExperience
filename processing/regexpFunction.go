@@ -7,7 +7,7 @@ import (
 )
 
 //проверка на положительность чисел
-func isCorrectOfferId(loffer_id string) (uint64, bool) {
+func IsCorrectOfferId(loffer_id string) (uint64, bool) {
 	var offer_id uint64
 	var errStr error
 	var isCorrect bool = true
@@ -24,7 +24,7 @@ func isCorrectOfferId(loffer_id string) (uint64, bool) {
 }
 
 //проверка на отсутсвите в начале чисел (товар не должен начинаться с чисел?)
-func isCorrectName(lname string) (string, bool) {
+func IsCorrectName(lname string) (string, bool) {
 	var name string
 	var isCorrect bool = true
 
@@ -40,7 +40,7 @@ func isCorrectName(lname string) (string, bool) {
 }
 
 //проверка на отсутствие знаков и букв лишних в числе с плаваюещей точкой
-func icCorrectPrice(lprice string) (float32, bool) {
+func IsCorrectPrice(lprice string) (float32, bool) {
 	var price float32
 	var isCorrect bool = true
 
@@ -61,7 +61,7 @@ func icCorrectPrice(lprice string) (float32, bool) {
 }
 
 //проверка на положительность чисел
-func isCorrectQuantity(lquantity string) (uint64, bool) {
+func IsCorrectQuantity(lquantity string) (uint64, bool) {
 	var quantity uint64
 	var errStr error
 	var isCorrect bool = true
@@ -79,7 +79,7 @@ func isCorrectQuantity(lquantity string) (uint64, bool) {
 }
 
 //проверка на правильной записи типа bool
-func isCorrectAvailable(lavailable string) (bool, bool) {
+func IsCorrectAvailable(lavailable string) (bool, bool) {
 	var available bool
 	var errStr error
 	var isCorrect bool = true

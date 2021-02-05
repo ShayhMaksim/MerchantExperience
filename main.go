@@ -1,13 +1,16 @@
 package main
 
 import (
-	"./processing"
 	"fmt"
+
+	"./processing"
+	
 )
 
 //"regexp"
 
 func main() {
+	
 	db := initDatabase()
 
 	// products := localSelect(db, 4, 0, "теле")

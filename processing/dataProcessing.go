@@ -26,30 +26,30 @@ type xlsxData struct {
 }
 
 //проверка на корректность считанных данных
-func isCorrect(loffer_id, lname, lprice, lquantity, lavailable string) xlsxData {
+func IsCorrect(loffer_id, lname, lprice, lquantity, lavailable string) xlsxData {
 
 	isCorrect := true
 	prod := product{}
 	//проверка на положительность чисел
-	prod.offer_id, isCorrect = isCorrectOfferId(loffer_id)
+	prod.offer_id, isCorrect = IsCorrectOfferId(loffer_id)
 
 	//проверка на отсутсвите в начале чисел (товар не должен начинаться с чисел?)
-	prod.name, isCorrect = isCorrectName(lname)
+	prod.name, isCorrect = IsCorrectName(lname)
 
 	//проверка на отсутствие знаков и букв лишних в числе с плаваюещей точкой
-	prod.price, isCorrect = icCorrectPrice(lprice)
+	prod.price, isCorrect = IsCorrectPrice(lprice)
 
 	//проверка на положительность чисел
-	prod.quantity, isCorrect = isCorrectQuantity(lquantity)
+	prod.quantity, isCorrect = IsCorrectQuantity(lquantity)
 
 	//проверка на правильной записи типа bool
-	prod.available, isCorrect = isCorrectAvailable(lavailable)
+	prod.available, isCorrect = IsCorrectAvailable(lavailable)
 
 	return xlsxData{prod, isCorrect}
 }
 
 //почему-то Баг с отсутсвием row до сих пор не пофиксили -_-
-func readDataFromXLSX(exelFileName string) []xlsxData {
+func ReadDataFromXLSX(exelFileName string) []xlsxData {
 	xlsxDatas := []xlsxData{}
 
 	xlFile, err := xlsx.OpenFile(exelFileName)
@@ -71,7 +71,7 @@ func readDataFromXLSX(exelFileName string) []xlsxData {
 			lquantity, _ := sheet.Cell(row, position+3)
 			lavailable, _ := sheet.Cell(row, position+4)
 
-			xlsxData := isCorrect(loffer_id.Value, lname.Value, lprice.Value, lquantity.Value, lavailable.Value)
+			xlsxData := IsCorrect(loffer_id.Value, lname.Value, lprice.Value, lquantity.Value, lavailable.Value)
 			xlsxDatas = append(xlsxDatas, xlsxData)
 		}
 	}
@@ -86,7 +86,7 @@ updated - обновлено
 deleted - удалено
 wrong - ошиблись
 */
-func delegateRequest(db *sql.DB, seller_id uint64, products []xlsxData) declaration {
+func DelegateRequest(db *sql.DB, seller_id uint64, products []xlsxData) declaration {
 	addForProducts := []product{}
 	updateForProducts := []product{}
 	deleteForProducts := []product{}
@@ -102,7 +102,7 @@ func delegateRequest(db *sql.DB, seller_id uint64, products []xlsxData) declarat
 			continue
 		}
 
-		rensponsibilities := localSelect(db, seller_id, value.product.offer_id, value.product.name)
+		rensponsibilities := LocalSelect(db, seller_id, value.product.offer_id, value.product.name)
 
 		//обновление данных происходит в том случае, если указанный id продавца совпадает с id продавца из БД
 		for _, rensponsibility := range rensponsibilities {
@@ -150,9 +150,9 @@ func delegateRequest(db *sql.DB, seller_id uint64, products []xlsxData) declarat
 		}
 	}
 
-	added := addProducts(db, seller_id, addForProducts)
-	updated := updateProducts(db, updateForProducts)
-	deleted := deleteProducts(db, seller_id, deleteForProducts)
+	added := AddProducts(db, seller_id, addForProducts)
+	updated := UpdateProducts(db, updateForProducts)
+	deleted := DeleteProducts(db, seller_id, deleteForProducts)
 
 	declaration := declaration{
 		added:   added,
@@ -165,7 +165,7 @@ func delegateRequest(db *sql.DB, seller_id uint64, products []xlsxData) declarat
 }
 
 //глубокая идея с подменой данных
-func isSimilar(dbProduct, excelProduct product) bool {
+func IsSimilar(dbProduct, excelProduct product) bool {
 	isSimilar := true
 	if dbProduct.name != excelProduct.name {
 		isSimilar = false

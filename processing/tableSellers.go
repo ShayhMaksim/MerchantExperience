@@ -8,7 +8,7 @@ type seller struct {
 }
 
 // Получение всех продавцов из БД
-func getAllSellers(db *sql.DB) []seller {
+func GetAllSellers(db *sql.DB) []seller {
 	sellers := []seller{}
 	rows, err := db.Query("select * from sellers")
 	checkErr(err)
