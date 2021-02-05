@@ -36,6 +36,7 @@ type testAvailable struct {
 }
 
 var testsOrderId = []testOrderId{
+	{"1", 1, true},
 	{"1234", 1234, true},
 	{"1234A", 0, false},
 	{"A12340", 0, false},
@@ -65,6 +66,7 @@ var testsPrice = []testPrice{
 }
 
 var testsQuantity = []testQuantity{
+	{"1", 1, true},
 	{"01234", 0, false},
 	{"1234A", 0, false},
 	{"A12340", 0, false},

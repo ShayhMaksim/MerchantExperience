@@ -11,7 +11,7 @@ func IsCorrectOfferId(lOffer_id string) (uint64, bool) {
 	var Offer_id uint64
 	var errStr error
 	var isCorrect bool = true
-	matched, err := regexp.MatchString("^[1-9][0-9]+$", lOffer_id)
+	matched, err := regexp.MatchString("^[1-9][0-9]*?$", lOffer_id)
 	checkErr(err)
 	if matched == false {
 		isCorrect = false
@@ -47,6 +47,7 @@ func IsCorrectPrice(lprice string) (float32, bool) {
 	r := regexp.MustCompile("\\s+")
 	replace := r.ReplaceAllString(lprice, "")
 	lprice_value := strings.Split(string(replace), "р.")[0]
+
 	matched, err := regexp.MatchString("^[0-9]*[.,]?[0-9]+$", lprice_value)
 	checkErr(err)
 	if matched == false {
@@ -66,7 +67,7 @@ func IsCorrectQuantity(lQuantity string) (uint64, bool) {
 	var errStr error
 	var isCorrect bool = true
 
-	matched, err := regexp.MatchString("^[1-9][0-9]+$", lQuantity)
+	matched, err := regexp.MatchString("^[1-9][0-9]*?$", lQuantity)
 	checkErr(err)
 	if matched == false {
 		isCorrect = false
