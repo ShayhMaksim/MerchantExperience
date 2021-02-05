@@ -7,36 +7,36 @@ import (
 )
 
 //проверка на положительность чисел
-func IsCorrectOfferId(loffer_id string) (uint64, bool) {
-	var offer_id uint64
+func IsCorrectOfferId(lOffer_id string) (uint64, bool) {
+	var Offer_id uint64
 	var errStr error
 	var isCorrect bool = true
-	matched, err := regexp.MatchString("^[1-9][0-9]+$", loffer_id)
+	matched, err := regexp.MatchString("^[1-9][0-9]+$", lOffer_id)
 	checkErr(err)
 	if matched == false {
 		isCorrect = false
-		offer_id = 0
+		Offer_id = 0
 	} else {
-		offer_id, errStr = strconv.ParseUint(loffer_id, 10, 64)
+		Offer_id, errStr = strconv.ParseUint(lOffer_id, 10, 64)
 		checkErr(errStr)
 	}
-	return offer_id, isCorrect
+	return Offer_id, isCorrect
 }
 
 //проверка на отсутсвите в начале чисел (товар не должен начинаться с чисел?)
-func IsCorrectName(lname string) (string, bool) {
-	var name string
+func IsCorrectName(lName string) (string, bool) {
+	var Name string
 	var isCorrect bool = true
 
-	matched, err := regexp.MatchString("^[a-zA-ZА-Яа-я]+", lname)
+	matched, err := regexp.MatchString("^[a-zA-ZА-Яа-я]+", lName)
 	checkErr(err)
 	if matched == false {
 		isCorrect = false
-		name = ""
+		Name = ""
 	} else {
-		name = string(lname)
+		Name = string(lName)
 	}
-	return name, isCorrect
+	return Name, isCorrect
 }
 
 //проверка на отсутствие знаков и букв лишних в числе с плаваюещей точкой
@@ -61,34 +61,34 @@ func IsCorrectPrice(lprice string) (float32, bool) {
 }
 
 //проверка на положительность чисел
-func IsCorrectQuantity(lquantity string) (uint64, bool) {
-	var quantity uint64
+func IsCorrectQuantity(lQuantity string) (uint64, bool) {
+	var Quantity uint64
 	var errStr error
 	var isCorrect bool = true
 
-	matched, err := regexp.MatchString("^[0-9]+$", lquantity)
+	matched, err := regexp.MatchString("^[0-9]+$", lQuantity)
 	checkErr(err)
 	if matched == false {
 		isCorrect = false
-		quantity = 0
+		Quantity = 0
 	} else {
-		quantity, errStr = strconv.ParseUint(lquantity, 10, 64)
+		Quantity, errStr = strconv.ParseUint(lQuantity, 10, 64)
 		checkErr(errStr)
 	}
-	return quantity, isCorrect
+	return Quantity, isCorrect
 }
 
 //проверка на правильной записи типа bool
-func IsCorrectAvailable(lavailable string) (bool, bool) {
-	var available bool
+func IsCorrectAvailable(lAvailable string) (bool, bool) {
+	var Available bool
 	var errStr error
 	var isCorrect bool = true
-	if (lavailable != "true") && (lavailable != "false") {
+	if (lAvailable != "true") && (lAvailable != "false") {
 		isCorrect = false
-		available = false //??
+		Available = false //??
 	} else {
-		available, errStr = strconv.ParseBool(lavailable)
+		Available, errStr = strconv.ParseBool(lAvailable)
 		checkErr(errStr)
 	}
-	return available, isCorrect
+	return Available, isCorrect
 }

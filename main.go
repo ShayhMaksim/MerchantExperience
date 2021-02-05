@@ -27,9 +27,9 @@ func main() {
 	}
 	// addProducts(db, 4, Products)
 	del := processing.DelegateRequest(db, 4, Products)
-	fmt.Println(del.added, del.deleted, del.updated, del.wrong)
+	fmt.Println(del.Added, del.Deleted, del.Updated, del.Wrong)
 	//deleteProducts(db, 4, pro)
 	// updateProducts(db, Products)
-	fmt.Println(Products[0].Product.price)
+	fmt.Println(Products[0].Product.Price)
 
 }

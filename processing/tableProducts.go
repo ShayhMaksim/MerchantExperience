@@ -6,11 +6,11 @@ import (
 
 // Структура данных для товаров из БД
 type Product struct {
-	offer_id  uint64
-	name      string
-	price     float32
-	quantity  uint64
-	available bool
+	Offer_id  uint64
+	Name      string
+	Price     float32
+	Quantity  uint64
+	Available bool
 }
 
 // Получение всех товаров из БД
@@ -20,20 +20,20 @@ func GetAllProducts(db *sql.DB) []Product {
 	checkErr(err)
 	for rows.Next() {
 
-		var offer_id uint64
-		var name string
-		var price float32
-		var quantity uint64
-		var available bool = true
+		var Offer_id uint64
+		var Name string
+		var Price float32
+		var Quantity uint64
+		var Available bool = true
 
-		err = rows.Scan(&offer_id, &name, &price, &quantity)
+		err = rows.Scan(&Offer_id, &Name, &Price, &Quantity)
 		Products = append(Products,
 			Product{
-				offer_id:  offer_id,
-				name:      name,
-				price:     price,
-				quantity:  quantity,
-				available: available})
+				Offer_id:  Offer_id,
+				Name:      Name,
+				Price:     Price,
+				Quantity:  Quantity,
+				Available: Available})
 	}
 	return Products
 

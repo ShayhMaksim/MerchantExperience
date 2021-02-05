@@ -3,26 +3,26 @@ package processing
 import "database/sql"
 
 type Seller struct {
-	seller_id uint64
-	offer_id  uint64
+	Seller_id uint64
+	Offer_id  uint64
 }
 
 // Получение всех продавцов из БД
 func GetAllSellers(db *sql.DB) []Seller {
-	sellers := []Seller{}
+	Sellers := []Seller{}
 	rows, err := db.Query("select * from Sellers")
 	checkErr(err)
 	for rows.Next() {
 
-		var seller_id uint64
-		var offer_id uint64
+		var Seller_id uint64
+		var Offer_id uint64
 
-		err = rows.Scan(&seller_id, &offer_id)
-		sellers = append(sellers,
+		err = rows.Scan(&Seller_id, &Offer_id)
+		Sellers = append(Sellers,
 			Seller{
-				seller_id: seller_id,
-				offer_id:  offer_id,
+				Seller_id: Seller_id,
+				Offer_id:  Offer_id,
 			})
 	}
-	return sellers
+	return Sellers
 }
