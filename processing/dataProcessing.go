@@ -91,27 +91,27 @@ func DelegateRequest(db *sql.DB, Seller_id uint64, Products []XlsxData) Declarat
 	updateForProducts := []Product{}
 	deleteForProducts := []Product{}
 	//rensponsibilities := getViewRensposibility(db)
-	var Wrong uint = 0
+	var wrong uint = 0
 
 	for _, value := range Products {
 		isUpdated := false //проверка на обновление данных
 
 		//проверка на корректность данных
 		if value.Correct == false {
-			Wrong++
+			wrong++
 			continue
 		}
 
 		rensponsibilities := LocalSelect(db, Seller_id, value.Product.Offer_id, value.Product.Name)
 
 		//обновление данных происходит в том случае, если указанный id продавца совпадает с id продавца из БД
-		for _, Rensponsibility := range rensponsibilities {
-			if Rensponsibility.Seller.Offer_id == value.Product.Offer_id && Seller_id == Rensponsibility.Seller.Seller_id {
+		for _, rensponsibility := range rensponsibilities {
+			if rensponsibility.Seller.Offer_id == value.Product.Offer_id && Seller_id == rensponsibility.Seller.Seller_id {
 				//обновление данных
 				UpdatedProduct := Product{}
 				if value.Product.Available == true {
 					//просто занимаемся сложением данных
-					UpdatedProduct.Quantity = Rensponsibility.Product.Quantity + value.Product.Quantity
+					UpdatedProduct.Quantity = rensponsibility.Product.Quantity + value.Product.Quantity
 					UpdatedProduct.Offer_id = value.Product.Offer_id
 					UpdatedProduct.Name = value.Product.Name
 					UpdatedProduct.Price = value.Product.Price
@@ -120,7 +120,7 @@ func DelegateRequest(db *sql.DB, Seller_id uint64, Products []XlsxData) Declarat
 				}
 
 				if value.Product.Available == false {
-					UpdatedProduct.Quantity = Rensponsibility.Product.Quantity - value.Product.Quantity
+					UpdatedProduct.Quantity = rensponsibility.Product.Quantity - value.Product.Quantity
 					if UpdatedProduct.Quantity > 0 {
 						//если товаров больше 0, то просто обновляем данные
 						UpdatedProduct.Offer_id = value.Product.Offer_id
@@ -130,10 +130,10 @@ func DelegateRequest(db *sql.DB, Seller_id uint64, Products []XlsxData) Declarat
 						updateForProducts = append(updateForProducts, UpdatedProduct)
 					} else if UpdatedProduct.Quantity == 0 {
 						// если товаров не осталось, то нужно просто удалить из БД
-						deleteForProducts = append(deleteForProducts, Rensponsibility.Product)
+						deleteForProducts = append(deleteForProducts, rensponsibility.Product)
 					} else if UpdatedProduct.Quantity < 0 {
 						//если в excel указано, что у нас больше товаров идет на удаление, то тут какая-то ошибка
-						Wrong++
+						wrong++
 					}
 				}
 				isUpdated = true
@@ -145,20 +145,20 @@ func DelegateRequest(db *sql.DB, Seller_id uint64, Products []XlsxData) Declarat
 			if value.Product.Available == true {
 				addForProducts = append(addForProducts, value.Product)
 			} else {
-				Wrong++
+				wrong++
 			}
 		}
 	}
 
-	Added := AddProducts(db, Seller_id, addForProducts)
-	Updated := UpdateProducts(db, updateForProducts)
-	Deleted := DeleteProducts(db, Seller_id, deleteForProducts)
+	added := AddProducts(db, Seller_id, addForProducts)
+	updated := UpdateProducts(db, updateForProducts)
+	deleted := DeleteProducts(db, Seller_id, deleteForProducts)
 
 	declaration := Declaration{
-		Added:   Added,
-		Updated: Updated,
-		Deleted: Deleted,
-		Wrong:   Wrong,
+		Added:   added,
+		Updated: updated,
+		Deleted: deleted,
+		Wrong:   wrong,
 	}
 
 	return declaration
