@@ -76,7 +76,24 @@ func isCorrectQuantity(lquantity string) (uint64, bool) {
 		quantity = 0
 	} else {
 		quantity, _ := strconv.ParseUint(lquantity, 10, 64)
+		checkErr(errStr)
 		quantity = quantity
 	}
 	return quantity, isCorrect
+}
+
+//проверка на правильной записи типа bool
+func isCorrectAvailable(lavailable string) (bool, bool) {
+	var available bool
+	var errStr error
+	var isCorrect bool = true
+	if (lavailable != "true") && (lavailable != "false") {
+		isCorrect = false
+		available = false //??
+	} else {
+		available, _ := strconv.ParseBool(lavailable)
+		checkErr(errStr)
+		available = available
+	}
+	return available, isCorrect
 }

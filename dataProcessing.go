@@ -3,9 +3,6 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"regexp"
-	"strconv"
-	"strings"
 
 	"github.com/tealeg/xlsx"
 )
@@ -34,61 +31,20 @@ func isCorrect(loffer_id, lname, lprice, lquantity, lavailable string) xlsxData 
 	isCorrect := true
 	prod := product{}
 	//проверка на положительность чисел
-	matched, err := regexp.MatchString("^[0-9]+$", loffer_id)
-	checkErr(err)
-	if matched == false {
-		isCorrect = false
-		prod.offer_id = 0
-	} else {
-		offer_id, _ := strconv.ParseUint(loffer_id, 10, 64)
-		prod.offer_id = offer_id
-	}
+	prod.offer_id, isCorrect = isCorrectOfferId(loffer_id)
 
 	//проверка на отсутсвите в начале чисел (товар не должен начинаться с чисел?)
-	matched, err = regexp.MatchString("^[a-zA-ZА-Яа-я]+", lname)
-	checkErr(err)
-	if matched == false {
-		isCorrect = false
-		prod.name = ""
-	} else {
-		prod.name = string(lname)
-	}
+	prod.name, isCorrect = isCorrectName(lname)
 
 	//проверка на отсутствие знаков и букв лишних в числе с плаваюещей точкой
-
-	r := regexp.MustCompile("\\s+")
-	replace := r.ReplaceAllString(lprice, "")
-	lprice_value := strings.Split(string(replace), "р.")[0]
-
-	matched, err = regexp.MatchString("^[0-9]*[.,]?[0-9]+$", lprice_value)
-	checkErr(err)
-	if matched == false {
-		isCorrect = false
-		prod.price = 0
-	} else {
-		price, _ := strconv.ParseFloat(lprice_value, 32)
-		prod.price = float32(price)
-	}
+	prod.price, isCorrect = icCorrectPrice(lprice)
 
 	//проверка на положительность чисел
-	matched, err = regexp.MatchString("^[0-9]+$", lquantity)
-	checkErr(err)
-	if matched == false {
-		isCorrect = false
-		prod.quantity = 0
-	} else {
-		quantity, _ := strconv.ParseUint(lquantity, 10, 64)
-		prod.quantity = quantity
-	}
+	prod.quantity, isCorrect = isCorrectQuantity(lquantity)
 
 	//проверка на правильной записи типа bool
-	if (lavailable != "true") && (lavailable != "false") {
-		isCorrect = false
-		prod.available = false //??
-	} else {
-		available, _ := strconv.ParseBool(lavailable)
-		prod.available = available
-	}
+	prod.available, isCorrect = isCorrectAvailable(lavailable)
+
 	return xlsxData{prod, isCorrect}
 }
 
