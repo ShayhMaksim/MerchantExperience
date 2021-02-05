@@ -21,7 +21,7 @@ type declaration struct {
 
 // структура, возвращающая результат с проверкой на корректность данных
 type xlsxData struct {
-	product product
+	product Product
 	correct bool
 }
 
@@ -29,7 +29,7 @@ type xlsxData struct {
 func IsCorrect(loffer_id, lname, lprice, lquantity, lavailable string) xlsxData {
 
 	isCorrect := true
-	prod := product{}
+	prod := Product{}
 	//проверка на положительность чисел
 	prod.offer_id, isCorrect = IsCorrectOfferId(loffer_id)
 
@@ -86,14 +86,14 @@ updated - обновлено
 deleted - удалено
 wrong - ошиблись
 */
-func DelegateRequest(db *sql.DB, seller_id uint64, products []xlsxData) declaration {
-	addForProducts := []product{}
-	updateForProducts := []product{}
-	deleteForProducts := []product{}
+func DelegateRequest(db *sql.DB, seller_id uint64, Products []xlsxData) declaration {
+	addForProducts := []Product{}
+	updateForProducts := []Product{}
+	deleteForProducts := []Product{}
 	//rensponsibilities := getViewRensposibility(db)
 	var wrong uint = 0
 
-	for _, value := range products {
+	for _, value := range Products {
 		isUpdated := false //проверка на обновление данных
 
 		//проверка на корректность данных
@@ -105,13 +105,13 @@ func DelegateRequest(db *sql.DB, seller_id uint64, products []xlsxData) declarat
 		rensponsibilities := LocalSelect(db, seller_id, value.product.offer_id, value.product.name)
 
 		//обновление данных происходит в том случае, если указанный id продавца совпадает с id продавца из БД
-		for _, rensponsibility := range rensponsibilities {
-			if rensponsibility.seller.offer_id == value.product.offer_id && seller_id == rensponsibility.seller.seller_id {
+		for _, Rensponsibility := range rensponsibilities {
+			if Rensponsibility.seller.offer_id == value.product.offer_id && seller_id == Rensponsibility.seller.seller_id {
 				//обновление данных
-				updatedProduct := product{}
+				updatedProduct := Product{}
 				if value.product.available == true {
 					//просто занимаемся сложением данных
-					updatedProduct.quantity = rensponsibility.product.quantity + value.product.quantity
+					updatedProduct.quantity = Rensponsibility.product.quantity + value.product.quantity
 					updatedProduct.offer_id = value.product.offer_id
 					updatedProduct.name = value.product.name
 					updatedProduct.price = value.product.price
@@ -120,7 +120,7 @@ func DelegateRequest(db *sql.DB, seller_id uint64, products []xlsxData) declarat
 				}
 
 				if value.product.available == false {
-					updatedProduct.quantity = rensponsibility.product.quantity - value.product.quantity
+					updatedProduct.quantity = Rensponsibility.product.quantity - value.product.quantity
 					if updatedProduct.quantity > 0 {
 						//если товаров больше 0, то просто обновляем данные
 						updatedProduct.offer_id = value.product.offer_id
@@ -130,7 +130,7 @@ func DelegateRequest(db *sql.DB, seller_id uint64, products []xlsxData) declarat
 						updateForProducts = append(updateForProducts, updatedProduct)
 					} else if updatedProduct.quantity == 0 {
 						// если товаров не осталось, то нужно просто удалить из БД
-						deleteForProducts = append(deleteForProducts, rensponsibility.product)
+						deleteForProducts = append(deleteForProducts, Rensponsibility.product)
 					} else if updatedProduct.quantity < 0 {
 						//если в excel указано, что у нас больше товаров идет на удаление, то тут какая-то ошибка
 						wrong++
@@ -165,7 +165,7 @@ func DelegateRequest(db *sql.DB, seller_id uint64, products []xlsxData) declarat
 }
 
 //глубокая идея с подменой данных
-func IsSimilar(dbProduct, excelProduct product) bool {
+func IsSimilar(dbProduct, excelProduct Product) bool {
 	isSimilar := true
 	if dbProduct.name != excelProduct.name {
 		isSimilar = false

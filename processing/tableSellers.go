@@ -2,15 +2,15 @@ package processing
 
 import "database/sql"
 
-type seller struct {
+type Seller struct {
 	seller_id uint64
 	offer_id  uint64
 }
 
 // Получение всех продавцов из БД
-func GetAllSellers(db *sql.DB) []seller {
-	sellers := []seller{}
-	rows, err := db.Query("select * from sellers")
+func GetAllSellers(db *sql.DB) []Seller {
+	sellers := []Seller{}
+	rows, err := db.Query("select * from Sellers")
 	checkErr(err)
 	for rows.Next() {
 
@@ -19,7 +19,7 @@ func GetAllSellers(db *sql.DB) []seller {
 
 		err = rows.Scan(&seller_id, &offer_id)
 		sellers = append(sellers,
-			seller{
+			Seller{
 				seller_id: seller_id,
 				offer_id:  offer_id,
 			})

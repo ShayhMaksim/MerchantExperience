@@ -4,33 +4,32 @@ import (
 	"fmt"
 
 	"./processing"
-	
 )
 
 //"regexp"
 
 func main() {
-	
-	db := initDatabase()
 
-	// products := localSelect(db, 4, 0, "теле")
+	db := processing.InitDatabase()
 
-	// for _, value := range products {
-	// 	fmt.Println(value.product.offer_id, value.product.name, value.product.price, value.product.quantity, value.product.available)
+	// Products := localSelect(db, 4, 0, "теле")
+
+	// for _, value := range Products {
+	// 	fmt.Println(value.Product.offer_id, value.Product.name, value.Product.price, value.Product.quantity, value.Product.available)
 	// }
 
-	// products := getAllProducts(db)
+	// Products := getAllProducts(db)
 
-	products := readDataFromXLSX(".\\Excel\\Update.xlsx")
-	pro := []product{}
-	for _, value := range products {
-		pro = append(pro, value.product)
+	Products := processing.ReadDataFromXLSX(".\\Excel\\Update.xlsx")
+	pro := []processing.Product{}
+	for _, value := range Products {
+		pro = append(pro, value.Product)
 	}
-	// addProducts(db, 4, products)
-	del := delegateRequest(db, 4, products)
+	// addProducts(db, 4, Products)
+	del := processing.DelegateRequest(db, 4, Products)
 	fmt.Println(del.added, del.deleted, del.updated, del.wrong)
 	//deleteProducts(db, 4, pro)
-	// updateProducts(db, products)
-	fmt.Println(products[0].product.price)
+	// updateProducts(db, Products)
+	fmt.Println(Products[0].Product.price)
 
 }

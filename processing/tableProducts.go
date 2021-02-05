@@ -5,7 +5,7 @@ import (
 )
 
 // Структура данных для товаров из БД
-type product struct {
+type Product struct {
 	offer_id  uint64
 	name      string
 	price     float32
@@ -14,9 +14,9 @@ type product struct {
 }
 
 // Получение всех товаров из БД
-func GetAllProducts(db *sql.DB) []product {
-	products := []product{}
-	rows, err := db.Query("select * from products")
+func GetAllProducts(db *sql.DB) []Product {
+	Products := []Product{}
+	rows, err := db.Query("select * from Products")
 	checkErr(err)
 	for rows.Next() {
 
@@ -27,14 +27,14 @@ func GetAllProducts(db *sql.DB) []product {
 		var available bool = true
 
 		err = rows.Scan(&offer_id, &name, &price, &quantity)
-		products = append(products,
-			product{
+		Products = append(Products,
+			Product{
 				offer_id:  offer_id,
 				name:      name,
 				price:     price,
 				quantity:  quantity,
 				available: available})
 	}
-	return products
+	return Products
 
 }
