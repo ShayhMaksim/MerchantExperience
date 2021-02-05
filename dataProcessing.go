@@ -40,8 +40,8 @@ func isCorrect(loffer_id, lname, lprice, lquantity, lavailable string) xlsxData 
 		isCorrect = false
 		prod.offer_id = 0
 	} else {
-		offer_id, _ := strconv.ParseUint(loffer_id, 10, 32)
-		prod.offer_id = uint(offer_id)
+		offer_id, _ := strconv.ParseUint(loffer_id, 10, 64)
+		prod.offer_id = offer_id
 	}
 
 	//проверка на отсутсвите в начале чисел (товар не должен начинаться с чисел?)
@@ -77,8 +77,8 @@ func isCorrect(loffer_id, lname, lprice, lquantity, lavailable string) xlsxData 
 		isCorrect = false
 		prod.quantity = 0
 	} else {
-		quantity, _ := strconv.ParseInt(lquantity, 10, 32)
-		prod.quantity = int(quantity)
+		quantity, _ := strconv.ParseUint(lquantity, 10, 64)
+		prod.quantity = quantity
 	}
 
 	//проверка на правильной записи типа bool
@@ -130,7 +130,7 @@ updated - обновлено
 deleted - удалено
 wrong - ошиблись
 */
-func delegateRequest(db *sql.DB, seller_id uint, products []xlsxData) declaration {
+func delegateRequest(db *sql.DB, seller_id uint64, products []xlsxData) declaration {
 	addForProducts := []product{}
 	updateForProducts := []product{}
 	deleteForProducts := []product{}
