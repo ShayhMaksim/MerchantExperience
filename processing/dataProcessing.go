@@ -86,14 +86,14 @@ Updated - обновлено
 Deleted - удалено
 Wrong - ошиблись
 */
-func DelegateRequest(db *sql.DB, Seller_id uint64, Products []XlsxData) Declaration {
+func DelegateRequest(db *sql.DB, seller_id uint64, xlsxData []XlsxData) Declaration {
 	addForProducts := []Product{}
 	updateForProducts := []Product{}
 	deleteForProducts := []Product{}
 	//rensponsibilities := getViewRensposibility(db)
 	var wrong uint = 0
 
-	for _, value := range Products {
+	for _, value := range xlsxData {
 		isUpdated := false //проверка на обновление данных
 
 		//проверка на корректность данных
@@ -102,11 +102,11 @@ func DelegateRequest(db *sql.DB, Seller_id uint64, Products []XlsxData) Declarat
 			continue
 		}
 
-		rensponsibilities := LocalSelect(db, Seller_id, value.Product.Offer_id, value.Product.Name)
+		rensponsibilities := LocalSelect(db, seller_id, value.Product.Offer_id, value.Product.Name)
 
 		//обновление данных происходит в том случае, если указанный id продавца совпадает с id продавца из БД
 		for _, rensponsibility := range rensponsibilities {
-			if rensponsibility.Seller.Offer_id == value.Product.Offer_id && Seller_id == rensponsibility.Seller.Seller_id {
+			if rensponsibility.Seller.Offer_id == value.Product.Offer_id && seller_id == rensponsibility.Seller.Seller_id {
 				//обновление данных
 				UpdatedProduct := Product{}
 				if value.Product.Available == true {
@@ -150,9 +150,9 @@ func DelegateRequest(db *sql.DB, Seller_id uint64, Products []XlsxData) Declarat
 		}
 	}
 
-	added := AddProducts(db, Seller_id, addForProducts)
+	added := AddProducts(db, seller_id, addForProducts)
 	updated := UpdateProducts(db, updateForProducts)
-	deleted := DeleteProducts(db, Seller_id, deleteForProducts)
+	deleted := DeleteProducts(db, seller_id, deleteForProducts)
 
 	declaration := Declaration{
 		Added:   added,
