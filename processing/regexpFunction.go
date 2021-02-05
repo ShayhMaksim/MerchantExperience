@@ -1,4 +1,4 @@
-package main
+package processing
 
 import (
 	"regexp"
@@ -19,7 +19,6 @@ func isCorrectOfferId(loffer_id string) (uint64, bool) {
 	} else {
 		offer_id, errStr = strconv.ParseUint(loffer_id, 10, 64)
 		checkErr(errStr)
-		offer_id = uint(offer_id)
 	}
 	return offer_id, isCorrect
 }
@@ -43,7 +42,6 @@ func isCorrectName(lname string) (string, bool) {
 //проверка на отсутствие знаков и букв лишних в числе с плаваюещей точкой
 func icCorrectPrice(lprice string) (float32, bool) {
 	var price float32
-	var errStr error
 	var isCorrect bool = true
 
 	r := regexp.MustCompile("\\s+")
@@ -54,11 +52,10 @@ func icCorrectPrice(lprice string) (float32, bool) {
 	checkErr(err)
 	if matched == false {
 		isCorrect = false
-		price = 0
+		price = 0.
 	} else {
-		price, errStr = strconv.ParseFloat(lprice_value, 32)
-		checkErr(errStr)
-		price = float32(price)
+		f, _ := strconv.ParseFloat(lprice_value, 32)
+		price = float32(f)
 	}
 	return price, isCorrect
 }
@@ -75,9 +72,8 @@ func isCorrectQuantity(lquantity string) (uint64, bool) {
 		isCorrect = false
 		quantity = 0
 	} else {
-		quantity, _ := strconv.ParseUint(lquantity, 10, 64)
+		quantity, errStr = strconv.ParseUint(lquantity, 10, 64)
 		checkErr(errStr)
-		quantity = quantity
 	}
 	return quantity, isCorrect
 }
@@ -91,9 +87,8 @@ func isCorrectAvailable(lavailable string) (bool, bool) {
 		isCorrect = false
 		available = false //??
 	} else {
-		available, _ := strconv.ParseBool(lavailable)
+		available, errStr = strconv.ParseBool(lavailable)
 		checkErr(errStr)
-		available = available
 	}
 	return available, isCorrect
 }
