@@ -47,13 +47,13 @@ func IsCorrectPrice(lprice string) (float32, bool) {
 	r := regexp.MustCompile("\\s+")
 	replace := r.ReplaceAllString(lprice, "")
 	lprice_value := strings.Split(string(replace), "р.")[0]
-
 	matched, err := regexp.MatchString("^[0-9]*[.,]?[0-9]+$", lprice_value)
 	checkErr(err)
 	if matched == false {
 		isCorrect = false
 		price = 0.
 	} else {
+		lprice_value := strings.Replace(lprice_value, ",", ".", -1)
 		f, _ := strconv.ParseFloat(lprice_value, 32)
 		price = float32(f)
 	}
@@ -66,7 +66,7 @@ func IsCorrectQuantity(lQuantity string) (uint64, bool) {
 	var errStr error
 	var isCorrect bool = true
 
-	matched, err := regexp.MatchString("^[0-9]+$", lQuantity)
+	matched, err := regexp.MatchString("^[1-9][0-9]+$", lQuantity)
 	checkErr(err)
 	if matched == false {
 		isCorrect = false
