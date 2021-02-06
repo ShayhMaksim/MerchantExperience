@@ -13,10 +13,10 @@ import (
 // Deleted - количество удаленных товаров
 // Wrong - количество неправильных строк
 type Declaration struct {
-	Added   uint
-	Updated uint
-	Deleted uint
-	Wrong   uint
+	Added   uint `json:"added"`
+	Updated uint `json:"updated"`
+	Deleted uint `json:"deleted"`
+	Wrong   uint `json:"wrong"`
 }
 
 // структура, возвращающая результат с проверкой на корректность данных
