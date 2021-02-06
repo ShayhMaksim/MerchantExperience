@@ -95,17 +95,26 @@ func DelegateRequest(db *sql.DB, seller_id uint64, xlsxData []XlsxData) Declarat
 
 	for _, value := range xlsxData {
 		isUpdated := false //проверка на обновление данных
-
+		isCorrectSellerID := true
 		//проверка на корректность данных
 		if value.Correct == false {
 			wrong++
 			continue
 		}
 
-		rensponsibilities := LocalSelect(db, seller_id, value.Product.Offer_id, value.Product.Name)
+		rensponsibilities := LocalSelect(db, 0, value.Product.Offer_id, value.Product.Name)
 
 		//обновление данных происходит в том случае, если указанный id продавца совпадает с id продавца из БД
 		for _, rensponsibility := range rensponsibilities {
+			//если айдишники совпадают по товару, а продавцы разные, то это ошибка
+			if rensponsibility.Seller.Offer_id == value.Product.Offer_id {
+				if rensponsibility.Seller.Seller_id != seller_id {
+					wrong++
+					isCorrectSellerID = false
+					break //выход из цикла, потому что id товаров совпали
+				}
+			}
+
 			if rensponsibility.Seller.Offer_id == value.Product.Offer_id && seller_id == rensponsibility.Seller.Seller_id {
 				//обновление данных
 				UpdatedProduct := Product{}
@@ -137,11 +146,11 @@ func DelegateRequest(db *sql.DB, seller_id uint64, xlsxData []XlsxData) Declarat
 					}
 				}
 				isUpdated = true
-				//break
+				break //выход из цикла, потому что id товаров совпали
 			}
 		}
 
-		if isUpdated == false {
+		if (isUpdated == false) && (isCorrectSellerID == true) {
 			if value.Product.Available == true {
 				addForProducts = append(addForProducts, value.Product)
 			} else {

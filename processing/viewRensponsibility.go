@@ -123,6 +123,7 @@ func LocalSelect(db *sql.DB, seller_id uint64, offer_id uint64, Name string) []R
 	if seller_id != 0 {
 		query += " and Seller_id=" + Seller_id_str
 	}
+
 	if offer_id != 0 {
 		query += " and Offer_id=" + Offer_id_str
 	}
