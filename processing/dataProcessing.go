@@ -49,11 +49,11 @@ func IsCorrect(lOffer_id, lName, lPrice, lQuantity, lAvailable string) XlsxData 
 }
 
 //почему-то Баг с отсутсвием row до сих пор не пофиксили -_-
-func ReadDataFromXLSX(exelFileName string) []XlsxData {
+func ReadDataFromXLSX(xlFile *xlsx.File) []XlsxData {
 	xlsxDatas := []XlsxData{}
 
-	xlFile, err := xlsx.OpenFile(exelFileName)
-	checkErr(err)
+	// xlFile, err := xlsx.OpenFile(exelFileName)
+	// checkErr(err)
 	for _, sheet := range xlFile.Sheets {
 		fmt.Println(&sheet)
 		for row := 0; row != sheet.MaxRow; row++ {
