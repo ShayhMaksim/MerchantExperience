@@ -40,26 +40,10 @@ var staticKey uint64 = 0                  //уникальный ключ для
 func updateNewData(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
-	fmt.Println("TEMP DIR:", os.TempDir())
+	var excelFile *os.File
+	var SELLER_ID uint64
 
-	src, hdr, err := r.FormFile("my-file")
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	defer src.Close()
-
-	dst, err := os.Create(filepath.Join(os.TempDir(), hdr.Filename))
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-		return
-	}
-	defer dst.Close()
-
-	io.Copy(dst, src)
-
-	SELLER_ID, _ := strconv.ParseUint(r.FormValue("seller-id"), 10, 64)
+	SELLER_ID, excelFile = readNewDataFromForm(w, r)
 
 	structCh := make(chan struct{})
 	del := processing.Declaration{}
@@ -69,10 +53,39 @@ func updateNewData(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(key)
 	staticKey++
 
-	file, _ := xlsx.OpenFile(dst.Name())
+	go asynchAct(SELLER_ID, excelFile, &del, structCh)
 
-	go asynchAct(SELLER_ID, file, &del, structCh)
+}
 
+//асинхронное выполнение всех вычислений (по правилам подали ID продавца и его файл .xlxs)
+func asynchAct(seller_id uint64, file *os.File, declaration *processing.Declaration, ch chan struct{}) {
+	defer close(ch)
+	excelFile, _ := xlsx.OpenFile(file.Name())
+	xlsxData := processing.ReadDataFromXLSX(excelFile)
+	*declaration = processing.DelegateRequest(database, seller_id, xlsxData)
+}
+
+//чтение данных по форме (что по идее не должно быть???)
+func readNewDataFromForm(w http.ResponseWriter, r *http.Request) (uint64, *os.File) {
+	fmt.Println("TEMP DIR:", os.TempDir())
+
+	src, hdr, err := r.FormFile("my-file")
+
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+	defer src.Close()
+
+	ExcelFile, err := os.Create(filepath.Join(os.TempDir(), hdr.Filename))
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+	}
+	defer ExcelFile.Close()
+
+	io.Copy(ExcelFile, src)
+
+	SELLER_ID, _ := strconv.ParseUint(r.FormValue("seller-id"), 10, 64)
+	return SELLER_ID, ExcelFile
 }
 
 //получение данных
@@ -89,14 +102,6 @@ func getUpdatedData(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(del)
 		//delete(conveyor, id) // удаляем элемент из конвейера
 	}
-}
-
-func asynchAct(seller_id uint64, file *xlsx.File, declaration *processing.Declaration, ch chan struct{}) {
-	defer close(ch)
-	// fmt.Println(inputData.Selled_id)
-	// fmt.Println(inputData.ExcelFileName)
-	xlsxData := processing.ReadDataFromXLSX(file)
-	*declaration = processing.DelegateRequest(database, seller_id, xlsxData)
 }
 
 func main() {

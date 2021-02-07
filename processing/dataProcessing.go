@@ -172,15 +172,3 @@ func DelegateRequest(db *sql.DB, seller_id uint64, xlsxData []XlsxData) Declarat
 	}
 	return declaration
 }
-
-//глубокая идея с подменой данных
-func IsSimilar(dbProduct, excelProduct Product) bool {
-	isSimilar := true
-	if dbProduct.Name != excelProduct.Name {
-		isSimilar = false
-	}
-	if dbProduct.Price != excelProduct.Price {
-		isSimilar = false
-	}
-	return isSimilar
-}
