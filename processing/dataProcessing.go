@@ -49,20 +49,33 @@ func IsCorrect(lOffer_id, lName, lPrice, lQuantity, lAvailable string) XlsxData 
 }
 
 //почему-то Баг с отсутсвием row до сих пор не пофиксили -_-
+//sheet.Rows undefined (type *xlsx.Sheet has no field or method Rows)
 func ReadDataFromXLSX(xlFile *xlsx.File) []XlsxData {
 	xlsxDatas := []XlsxData{}
 
 	// xlFile, err := xlsx.OpenFile(exelFileName)
 	// checkErr(err)
+
 	for _, sheet := range xlFile.Sheets {
 		fmt.Println(&sheet)
+		//надеемся,что с первой строчки начинается все
+
 		for row := 0; row != sheet.MaxRow; row++ {
 
 			//На тот случай, если у нас данные сдвинуты в таблице по строке
 			position := 0
+
 			lOffer_id, _ := sheet.Cell(row, position+0)
-			for lOffer_id == nil {
+			for lOffer_id.Value == "" {
 				position++
+				lOffer_id, _ = sheet.Cell(row, position+0)
+				if position == sheet.MaxCol {
+					break
+				}
+			}
+			//ужасные костыли из-за поломанной библиотеки
+			if position == sheet.MaxCol {
+				continue
 			}
 
 			// lOffer_id, _ := sheet.Cell(row, position+0)
