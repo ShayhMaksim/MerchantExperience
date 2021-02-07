@@ -83,7 +83,7 @@ func getUpdatedData(w http.ResponseWriter, r *http.Request) {
 		//do something here
 		if val.flag == false {
 			<-*val.ChStruct
-			conveyor[id] = AsynchDeclaration{val.Declaration, *&val.ChStruct, true}
+			conveyor[id] = AsynchDeclaration{val.Declaration, nil, true}
 		}
 		del := *val.Declaration
 		json.NewEncoder(w).Encode(del)
