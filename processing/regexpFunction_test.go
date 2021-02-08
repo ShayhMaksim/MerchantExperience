@@ -91,8 +91,9 @@ var testsAvailable = []testAvailable{
 }
 
 func TestIsCorrectOfferId(t *testing.T) {
-	fmt.Println("Проверка IsCorrectOfferId")
+	fmt.Println("Проверка на корректность поля offer_id")
 	for index, pair := range testsOrderId {
+		fmt.Print("Проверка {", pair.correct, ",", pair.intput, ",", pair.result, "}")
 		result, correct := IsCorrectOfferId(pair.intput)
 		if result != pair.result {
 			t.Error(
@@ -110,12 +111,14 @@ func TestIsCorrectOfferId(t *testing.T) {
 				"got", correct,
 			)
 		}
+		fmt.Println(" - Успешно пройдено")
 	}
 }
 
 func TestIsCorrectName(t *testing.T) {
-	fmt.Println("Проверка TestIsCorrectName")
+	fmt.Println("Проверка на корректность поля name")
 	for index, pair := range testsName {
+		fmt.Print("Проверка {", pair.correct, ",", pair.intput, ",", pair.result, "}")
 		result, correct := IsCorrectName(pair.intput)
 		if result != pair.result {
 			t.Error(
@@ -133,12 +136,14 @@ func TestIsCorrectName(t *testing.T) {
 				"got", correct,
 			)
 		}
+		fmt.Println(" - Успешно пройдено")
 	}
 }
 
 func TestIsCorrectPrice(t *testing.T) {
-	fmt.Println("Проверка TestIsCorrectPrice")
+	fmt.Println("Проверка на корректность поля price")
 	for index, pair := range testsPrice {
+		fmt.Print("Проверка {", pair.correct, ",", pair.intput, ",", pair.result, "}")
 		result, correct := IsCorrectPrice(pair.intput)
 		if result != pair.result {
 			t.Error(
@@ -156,12 +161,14 @@ func TestIsCorrectPrice(t *testing.T) {
 				"got", correct,
 			)
 		}
+		fmt.Println(" - Успешно пройдено")
 	}
 }
 
 func TestIsCorrectQuantity(t *testing.T) {
-	fmt.Println("Проверка TestIsCorrectQuantity")
+	fmt.Println("Проверка на корректность поля quantity")
 	for index, pair := range testsQuantity {
+		fmt.Print("Проверка {", pair.correct, ",", pair.intput, ",", pair.result, "}")
 		result, correct := IsCorrectQuantity(pair.intput)
 		if result != pair.result {
 			t.Error(
@@ -179,12 +186,14 @@ func TestIsCorrectQuantity(t *testing.T) {
 				"got", correct,
 			)
 		}
+		fmt.Println(" - Успешно пройдено")
 	}
 }
 
 func TestIsCorrectAvailable(t *testing.T) {
-	fmt.Println("Проверка TestIsCorrectAvailable")
+	fmt.Println("Проверка на корректность поля available")
 	for index, pair := range testsAvailable {
+		fmt.Print("Проверка {", pair.correct, ",", pair.intput, ",", pair.result, "}")
 		result, correct := IsCorrectAvailable(pair.intput)
 		if result != pair.result {
 			t.Error(
@@ -202,5 +211,6 @@ func TestIsCorrectAvailable(t *testing.T) {
 				"got", correct,
 			)
 		}
+		fmt.Println(" - Успешно пройдено")
 	}
 }
