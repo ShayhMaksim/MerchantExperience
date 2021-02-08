@@ -85,7 +85,7 @@ func asynchAct(seller_id uint64, excelFile *xlsx.File, declaration *processing.D
 	*declaration = processing.DelegateRequest(Database, seller_id, xlsxData)
 }
 
-//получение данных
+//получение обновленных данных
 func GetUpdatedData(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.ParseUint(vars["id"], 10, 64)
