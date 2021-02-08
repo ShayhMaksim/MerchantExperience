@@ -65,10 +65,10 @@ func ReadDataFromXLSX(xlFile *xlsx.File) []XlsxData {
 			//На тот случай, если у нас данные сдвинуты в таблице по строке
 			position := 0
 
-			lOffer_id, _ := sheet.Cell(row, position+0)
+			lOffer_id := sheet.Cell(row, position+0)
 			for lOffer_id.Value == "" {
 				position++
-				lOffer_id, _ = sheet.Cell(row, position+0)
+				lOffer_id = sheet.Cell(row, position+0)
 				if position == sheet.MaxCol {
 					break
 				}
@@ -79,10 +79,10 @@ func ReadDataFromXLSX(xlFile *xlsx.File) []XlsxData {
 			}
 
 			// lOffer_id, _ := sheet.Cell(row, position+0)
-			lName, _ := sheet.Cell(row, position+1)
-			lPrice, _ := sheet.Cell(row, position+2)
-			lQuantity, _ := sheet.Cell(row, position+3)
-			lAvailable, _ := sheet.Cell(row, position+4)
+			lName := sheet.Cell(row, position+1)
+			lPrice := sheet.Cell(row, position+2)
+			lQuantity := sheet.Cell(row, position+3)
+			lAvailable := sheet.Cell(row, position+4)
 
 			xlsxData := IsCorrect(lOffer_id.Value, lName.Value, lPrice.Value, lQuantity.Value, lAvailable.Value)
 			xlsxDatas = append(xlsxDatas, xlsxData)
