@@ -3,8 +3,8 @@ package processing
 import "database/sql"
 
 type Seller struct {
-	Seller_id uint64
-	Offer_id  uint64
+	Seller_id uint64 `json:"seller_id"`
+	Offer_id  uint64 `json:"offer_id"`
 }
 
 // Получение всех продавцов из БД

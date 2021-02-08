@@ -6,11 +6,11 @@ import (
 
 // Структура данных для товаров из БД
 type Product struct {
-	Offer_id  uint64 
-	Name      string
-	Price     float32
-	Quantity  uint64
-	Available bool
+	Offer_id  uint64  `json:"offer_id"`
+	Name      string  `json:"name"`
+	Price     float32 `json:"price"`
+	Quantity  uint64  `json:"quantity"`
+	Available bool    `json:"available"`
 }
 
 // Получение всех товаров из БД

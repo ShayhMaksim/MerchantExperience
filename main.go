@@ -21,5 +21,6 @@ func main() {
 	})
 	r.HandleFunc("/data", requests.UpdateNewData).Methods("POST")
 	r.HandleFunc("/data/{id:[0-9]+}", requests.GetUpdatedData).Methods("GET")
+	r.HandleFunc("/info", requests.GetData).Methods("POST")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }

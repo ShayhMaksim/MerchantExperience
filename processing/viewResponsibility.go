@@ -6,8 +6,8 @@ import (
 )
 
 type Rensponsibility struct {
-	Seller  Seller
-	Product Product
+	Seller  Seller  `json:"seller"`
+	Product Product `json:"product"`
 }
 
 // Получение вьхи продавцов и товаров из БД

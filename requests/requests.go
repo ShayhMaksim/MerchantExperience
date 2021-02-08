@@ -32,13 +32,6 @@ type AsynchDeclaration struct {
 	flag        bool //факт, что данные получены
 }
 
-type infoDB struct {
-	Offer_id uint64  `json:"offer_id"`
-	Name     string  `json:"name"`
-	Price    float32 `json:"price"`
-	Quantity uint64  `json:"quantity"`
-}
-
 // DownloadFile will download a url to a local file. It's efficient because it will
 // write as it downloads and not load the whole file into memory.
 func DownloadFile(filepath string, url string) (*os.File, error) {
@@ -106,4 +99,24 @@ func GetUpdatedData(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(del)
 		//delete(conveyor, id) // удаляем элемент из конвейера
 	}
+}
+
+type InputInfoData struct {
+	Selled_id uint64 `json:"selled_id"`
+	Offer_id  uint64 `json:"offer_id"`
+	Name      string `json:"name"`
+}
+
+func GetData(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var inputInfoData InputInfoData
+
+	_ = json.NewDecoder(r.Body).Decode(&inputInfoData)
+
+	seller_id := inputInfoData.Selled_id
+	offer_id := inputInfoData.Offer_id
+	name := inputInfoData.Name
+	selected := processing.LocalSelect(Database, seller_id, offer_id, name)
+	json.NewEncoder(w).Encode(selected)
 }
