@@ -3,6 +3,7 @@ module github.com/sargaras/MerchantExperience
 go 1.15
 
 require (
+	github.com/cavaliercoder/grab v2.0.0+incompatible
 	github.com/gorilla/mux v1.8.0
 	github.com/kr/text v0.2.0 // indirect
 	github.com/lib/pq v1.9.0

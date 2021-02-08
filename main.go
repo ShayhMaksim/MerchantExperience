@@ -3,13 +3,11 @@ package main
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
-
 	"io"
+	"os"
+
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strconv"
 
 	"github.com/gorilla/mux"
@@ -36,14 +34,39 @@ var database *sql.DB
 var conveyor map[uint64]AsynchDeclaration // конвейер для асинхронной обработки
 var staticKey uint64 = 0                  //уникальный ключ для конвейера
 
+// DownloadFile will download a url to a local file. It's efficient because it will
+// write as it downloads and not load the whole file into memory.
+func DownloadFile(filepath string, url string) (*os.File, error) {
+
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return nil, err
+	}
+	defer out.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	return out, err
+}
+
 //загрузка данных
 func updateNewData(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
-	var excelFile *os.File
-	var SELLER_ID uint64
+	var inputData InputData
 
-	SELLER_ID, excelFile = readNewDataFromForm(w, r)
+	_ = json.NewDecoder(r.Body).Decode(&inputData)
+
+	SELLER_ID := inputData.Selled_id
+	excelFileReaded, _ := xlsx.OpenFile(inputData.ExcelFileName)
 
 	structCh := make(chan struct{})
 	del := processing.Declaration{}
@@ -53,39 +76,15 @@ func updateNewData(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(key)
 	staticKey++
 
-	go asynchAct(SELLER_ID, excelFile, &del, structCh)
+	go asynchAct(SELLER_ID, excelFileReaded, &del, structCh)
 
 }
 
 //асинхронное выполнение всех вычислений (по правилам подали ID продавца и его файл .xlxs)
-func asynchAct(seller_id uint64, file *os.File, declaration *processing.Declaration, ch chan struct{}) {
+func asynchAct(seller_id uint64, excelFile *xlsx.File, declaration *processing.Declaration, ch chan struct{}) {
 	defer close(ch)
-	excelFile, _ := xlsx.OpenFile(file.Name())
 	xlsxData := processing.ReadDataFromXLSX(excelFile)
 	*declaration = processing.DelegateRequest(database, seller_id, xlsxData)
-}
-
-//чтение данных по форме (что по идее не должно быть???)
-func readNewDataFromForm(w http.ResponseWriter, r *http.Request) (uint64, *os.File) {
-	fmt.Println("TEMP DIR:", os.TempDir())
-
-	src, hdr, err := r.FormFile("my-file")
-
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-	}
-	defer src.Close()
-
-	ExcelFile, err := os.Create(filepath.Join(os.TempDir(), hdr.Filename))
-	if err != nil {
-		http.Error(w, err.Error(), 500)
-	}
-	defer ExcelFile.Close()
-
-	io.Copy(ExcelFile, src)
-
-	SELLER_ID, _ := strconv.ParseUint(r.FormValue("seller-id"), 10, 64)
-	return SELLER_ID, ExcelFile
 }
 
 //получение данных
@@ -113,9 +112,8 @@ func main() {
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
-		http.ServeFile(w, r, "user.html")
 	})
 	r.HandleFunc("/data", updateNewData).Methods("POST")
-	r.HandleFunc("/data/{id}", getUpdatedData).Methods("GET")
+	r.HandleFunc("/data/{id:[0-9]+}", getUpdatedData).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8080", r))
 }
