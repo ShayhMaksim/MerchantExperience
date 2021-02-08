@@ -63,7 +63,7 @@ func DownloadFile(filepath string, url string) (*os.File, error) {
 }
 
 //загрузка данных
-func updateNewData(w http.ResponseWriter, r *http.Request) {
+func UpdateNewData(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	var inputData InputData
@@ -93,7 +93,7 @@ func asynchAct(seller_id uint64, excelFile *xlsx.File, declaration *processing.D
 }
 
 //получение данных
-func getUpdatedData(w http.ResponseWriter, r *http.Request) {
+func GetUpdatedData(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.ParseUint(vars["id"], 10, 64)
 	if val, ok := Conveyor[id]; ok {
