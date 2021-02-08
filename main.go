@@ -113,7 +113,7 @@ func main() {
 
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
-		http.ServeFile(w, r, ".\\user.html")
+		http.ServeFile(w, r, "user.html")
 	})
 	r.HandleFunc("/data", updateNewData).Methods("POST")
 	r.HandleFunc("/data/{id}", getUpdatedData).Methods("GET")

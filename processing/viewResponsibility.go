@@ -53,12 +53,12 @@ func AddProducts(db *sql.DB, seller_id uint64, products []Product) uint {
 
 	//мне кажется, что лучше составить один большой текстовый запрос
 	for _, value := range products {
-		ProductExec, err := db.Exec("insert into Products (Offer_id, Name, Price, Quantity) values ($1, $2, $3, $4)",
+		ProductExec, err := db.Exec("insert into products (Offer_id, Name, Price, Quantity) values ($1, $2, $3, $4)",
 			value.Offer_id, value.Name, value.Price, value.Quantity)
 		checkErr(err)
 		result, _ := ProductExec.RowsAffected()
 		added += uint(result)
-		SellerExec, err := db.Exec("insert into Sellers (Seller_id,Offer_id) values ($1, $2)",
+		SellerExec, err := db.Exec("insert into sellers (Seller_id,Offer_id) values ($1, $2)",
 			seller_id, value.Offer_id)
 		checkErr(err)
 		_, _ = SellerExec.RowsAffected()
@@ -75,13 +75,13 @@ func DeleteProducts(db *sql.DB, seller_id uint64, products []Product) uint {
 	}
 
 	for _, value := range products {
-		ProductExec, err := db.Exec("delete from Products where Offer_id=$1",
+		ProductExec, err := db.Exec("delete from products where Offer_id=$1",
 			value.Offer_id)
 		checkErr(err)
 
 		result, _ := ProductExec.RowsAffected()
 		deleted += uint(result)
-		SellerExec, err := db.Exec("delete from Sellers where  Seller_id=$1 and Offer_id=$2",
+		SellerExec, err := db.Exec("delete from sellers where  Seller_id=$1 and Offer_id=$2",
 			seller_id, value.Offer_id)
 		checkErr(err)
 		_, _ = SellerExec.RowsAffected()
@@ -99,7 +99,7 @@ func UpdateProducts(db *sql.DB, products []Product) uint {
 	}
 
 	for _, value := range products {
-		ProductExec, err := db.Exec("update Products set Name=$2, Price=$3, Quantity=$4 where Offer_id=$1",
+		ProductExec, err := db.Exec("update products set Name=$2, Price=$3, Quantity=$4 where Offer_id=$1",
 			value.Offer_id, value.Name, value.Price, value.Quantity)
 		checkErr(err)
 		result, _ := ProductExec.RowsAffected()

@@ -1,0 +1,24 @@
+version: '3.9'
+
+services:
+  main:
+    build: ./
+    command: ./wait-for-postgres.sh database ./main
+    ports:
+      - 8080:8080
+    depends_on:
+      - database
+    environment:
+      - DB_PASSWORD=12345
+  database:
+    restart: always
+    image: postgres
+    volumes:
+      - data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=12345
+    ports:
+      - 5432:5432
+
+volumes:
+  data:
