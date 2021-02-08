@@ -6,7 +6,7 @@ import (
 
 // Структура данных для товаров из БД
 type Product struct {
-	Offer_id  uint64
+	Offer_id  uint64 
 	Name      string
 	Price     float32
 	Quantity  uint64

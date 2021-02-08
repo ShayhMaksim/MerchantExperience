@@ -11,11 +11,11 @@ import (
 	Набор констант для строки входа в БД
 */
 const (
-	HOST        = "localhost" //"database" - docker
+	HOST        = "database" //"database" - docker
 	PORT        = 5432
 	DB_USER     = "postgres"
 	DB_PASSWORD = "12345"
-	DB_NAME     = "Base" //"base" - docker
+	DB_NAME     = "base" //"base" - docker
 )
 
 /*
