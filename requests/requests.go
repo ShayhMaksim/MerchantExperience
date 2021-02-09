@@ -3,6 +3,7 @@ package requests
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -30,6 +31,10 @@ type AsynchDeclaration struct {
 	Declaration *processing.Declaration
 	ChStruct    *chan struct{}
 	flag        bool //факт, что данные получены
+}
+
+type ErrorJson struct {
+	Error string `json:"error"`
 }
 
 // DownloadFile will download a url to a local file. It's efficient because it will
@@ -64,7 +69,13 @@ func UpdateNewData(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&inputData)
 
 	SELLER_ID := inputData.Selled_id
-	excelFileReaded, _ := xlsx.OpenFile(inputData.ExcelFileName)
+	excelFileReaded, err := xlsx.OpenFile(inputData.ExcelFileName)
+	if err != nil {
+		jerror := ErrorJson{"Нет такого файла в директории!"}
+		json.NewEncoder(w).Encode(jerror)
+		fmt.Println("Нет такого файла в директории!")
+		return
+	}
 
 	structCh := make(chan struct{})
 	del := processing.Declaration{}
@@ -74,13 +85,13 @@ func UpdateNewData(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(key)
 	StaticKey++
 
-	go asynchAct(SELLER_ID, excelFileReaded, &del, structCh)
+	go asynchAct(SELLER_ID, excelFileReaded, &del, &structCh)
 
 }
 
 //асинхронное выполнение всех вычислений (по правилам подали ID продавца и его файл .xlxs)
-func asynchAct(seller_id uint64, excelFile *xlsx.File, declaration *processing.Declaration, ch chan struct{}) {
-	defer close(ch)
+func asynchAct(seller_id uint64, excelFile *xlsx.File, declaration *processing.Declaration, ch * chan struct{}) {
+	defer close(*ch)
 	xlsxData := processing.ReadDataFromXLSX(excelFile)
 	*declaration = processing.DelegateRequest(Database, seller_id, xlsxData)
 }

@@ -5,14 +5,15 @@ set -e
   
 shift
 cmd="$@"
-  
-# PGPASSWORD=$DB_PASSWORD psql -h "database" -U "postgres" <<-EOSQL
-#   DROP DATABASE base;
-#   DROP DATABASE base;
-#   DROP View responsibility;
-#   DROP Table sellers;
-#   DROP Table products;
-# EOSQL
+
+echo "Настраивается вручную БД: смотреть файлы processing/database.go"
+PGPASSWORD=$DB_PASSWORD psql -h "database" -U "postgres" <<-EOSQL
+  DROP DATABASE base;
+  DROP DATABASE base;
+  DROP View responsibility;
+  DROP Table sellers;
+  DROP Table products;
+EOSQL
 
 PGPASSWORD=$DB_PASSWORD psql -h "database" -U "postgres" <<-EOSQL
 CREATE DATABASE base;

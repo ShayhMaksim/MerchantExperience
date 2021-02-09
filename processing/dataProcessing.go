@@ -68,10 +68,10 @@ func ReadDataFromXLSX(xlFile *xlsx.File) []XlsxData {
 			lOffer_id := sheet.Cell(row, position+0)
 			for lOffer_id.Value == "" {
 				position++
-				lOffer_id = sheet.Cell(row, position+0)
 				if position == sheet.MaxCol {
 					break
 				}
+				lOffer_id = sheet.Cell(row, position+0)
 			}
 			//ужасные костыли из-за поломанной библиотеки
 			if position == sheet.MaxCol {
