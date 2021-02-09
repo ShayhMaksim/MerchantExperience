@@ -15,16 +15,16 @@ import (
 )
 
 var Database *sql.DB
-var Conveyor map[uint64]AsynchDeclaration // конвейер для асинхронной обработки
-var StaticKey uint64 = 0                  //уникальный ключ для конвейера
+var Conveyor map[uint]AsynchDeclaration // конвейер для асинхронной обработки
+var StaticKey uint = 0                  //уникальный ключ для конвейера
 
 type InputData struct {
-	Selled_id     uint64 `json:"selled_id"`
+	Selled_id     uint   `json:"selled_id"`
 	ExcelFileName string `json:"excelFileName"`
 }
 
 type UniqueKey struct {
-	ID uint64 `json:"id"`
+	ID uint `json:"id"`
 }
 
 type AsynchDeclaration struct {
@@ -90,7 +90,7 @@ func UpdateNewData(w http.ResponseWriter, r *http.Request) {
 }
 
 //асинхронное выполнение всех вычислений (по правилам подали ID продавца и его файл .xlxs)
-func asynchAct(seller_id uint64, excelFile *xlsx.File, declaration *processing.Declaration, ch * chan struct{}) {
+func asynchAct(seller_id uint, excelFile *xlsx.File, declaration *processing.Declaration, ch *chan struct{}) {
 	defer close(*ch)
 	xlsxData := processing.ReadDataFromXLSX(excelFile)
 	*declaration = processing.DelegateRequest(Database, seller_id, xlsxData)
@@ -99,12 +99,13 @@ func asynchAct(seller_id uint64, excelFile *xlsx.File, declaration *processing.D
 //получение обновленных данных
 func GetUpdatedData(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, _ := strconv.ParseUint(vars["id"], 10, 64)
-	if val, ok := Conveyor[id]; ok {
+	id, _ := strconv.ParseUint(vars["id"], 10, 32)
+	uintid := uint(id)
+	if val, ok := Conveyor[uintid]; ok {
 		//do something here
 		if val.flag == false {
 			<-*val.ChStruct
-			Conveyor[id] = AsynchDeclaration{val.Declaration, nil, true}
+			Conveyor[uintid] = AsynchDeclaration{val.Declaration, nil, true}
 		}
 		del := *val.Declaration
 		json.NewEncoder(w).Encode(del)
@@ -113,8 +114,8 @@ func GetUpdatedData(w http.ResponseWriter, r *http.Request) {
 }
 
 type InputInfoData struct {
-	Selled_id uint64 `json:"selled_id"`
-	Offer_id  uint64 `json:"offer_id"`
+	Selled_id uint   `json:"selled_id"`
+	Offer_id  uint   `json:"offer_id"`
 	Name      string `json:"name"`
 }
 

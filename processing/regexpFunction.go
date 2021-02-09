@@ -7,7 +7,7 @@ import (
 )
 
 //проверка на положительность чисел
-func IsCorrectOfferId(lOffer_id string) (uint64, bool) {
+func IsCorrectOfferId(lOffer_id string) (uint, bool) {
 	var Offer_id uint64
 	var errStr error
 	var isCorrect bool = true
@@ -17,10 +17,10 @@ func IsCorrectOfferId(lOffer_id string) (uint64, bool) {
 		isCorrect = false
 		Offer_id = 0
 	} else {
-		Offer_id, errStr = strconv.ParseUint(lOffer_id, 10, 64)
+		Offer_id, errStr = strconv.ParseUint(lOffer_id, 10, 32)
 		checkErr(errStr)
 	}
-	return Offer_id, isCorrect
+	return uint(Offer_id), isCorrect
 }
 
 //проверка на отсутсвите в начале чисел (товар не должен начинаться с чисел?)
@@ -62,7 +62,7 @@ func IsCorrectPrice(lprice string) (float32, bool) {
 }
 
 //проверка на положительность чисел
-func IsCorrectQuantity(lQuantity string) (uint64, bool) {
+func IsCorrectQuantity(lQuantity string) (uint, bool) {
 	var Quantity uint64
 	var errStr error
 	var isCorrect bool = true
@@ -73,10 +73,10 @@ func IsCorrectQuantity(lQuantity string) (uint64, bool) {
 		isCorrect = false
 		Quantity = 0
 	} else {
-		Quantity, errStr = strconv.ParseUint(lQuantity, 10, 64)
+		Quantity, errStr = strconv.ParseUint(lQuantity, 10, 32)
 		checkErr(errStr)
 	}
-	return Quantity, isCorrect
+	return uint(Quantity), isCorrect
 }
 
 //проверка на правильной записи типа bool

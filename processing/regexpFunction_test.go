@@ -7,7 +7,7 @@ import (
 
 type testOrderId struct {
 	intput  string
-	result  uint64
+	result  uint
 	correct bool
 }
 
@@ -25,7 +25,7 @@ type testPrice struct {
 
 type testQuantity struct {
 	intput  string
-	result  uint64
+	result  uint
 	correct bool
 }
 

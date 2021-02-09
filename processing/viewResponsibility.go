@@ -17,11 +17,11 @@ func GetViewRensposibility(db *sql.DB) []Rensponsibility {
 	checkErr(err)
 	for rows.Next() {
 
-		var Seller_id uint64
-		var Offer_id uint64
+		var Seller_id uint
+		var Offer_id uint
 		var Name string
 		var Price float32
-		var Quantity uint64
+		var Quantity uint
 		var Available bool = true
 
 		err = rows.Scan(&Seller_id, &Offer_id, &Name, &Price, &Quantity)
@@ -44,7 +44,7 @@ func GetViewRensposibility(db *sql.DB) []Rensponsibility {
 }
 
 //Добавление новых данных в БД
-func AddProducts(db *sql.DB, seller_id uint64, products []Product) uint {
+func AddProducts(db *sql.DB, seller_id uint, products []Product) uint {
 	var added uint = 0 //счетчик добавленных строк
 	lenght := len(products)
 	if lenght == 0 {
@@ -67,7 +67,7 @@ func AddProducts(db *sql.DB, seller_id uint64, products []Product) uint {
 }
 
 //удаление данных из БД
-func DeleteProducts(db *sql.DB, seller_id uint64, products []Product) uint {
+func DeleteProducts(db *sql.DB, seller_id uint, products []Product) uint {
 	var deleted uint = 0 // счетчик удаленных товаров
 	lenght := len(products)
 	if lenght == 0 {
@@ -109,7 +109,7 @@ func UpdateProducts(db *sql.DB, products []Product) uint {
 }
 
 //Получение куска данных из БД
-func LocalSelect(db *sql.DB, seller_id uint64, offer_id uint64, Name string) []Rensponsibility {
+func LocalSelect(db *sql.DB, seller_id uint, offer_id uint, Name string) []Rensponsibility {
 	m_lrensposibility := []Rensponsibility{}
 
 	var rows *sql.Rows
@@ -133,11 +133,11 @@ func LocalSelect(db *sql.DB, seller_id uint64, offer_id uint64, Name string) []R
 	checkErr(err)
 	for rows.Next() {
 
-		var Seller_id uint64
-		var Offer_id uint64
+		var Seller_id uint
+		var Offer_id uint
 		var Name string
 		var Price float32
-		var Quantity uint64
+		var Quantity uint
 		var Available bool = true
 
 		err = rows.Scan(&Seller_id, &Offer_id, &Name, &Price, &Quantity)

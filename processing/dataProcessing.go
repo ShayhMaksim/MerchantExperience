@@ -99,7 +99,7 @@ Updated - обновлено
 Deleted - удалено
 Wrong - ошиблись
 */
-func DelegateRequest(db *sql.DB, seller_id uint64, xlsxData []XlsxData) Declaration {
+func DelegateRequest(db *sql.DB, seller_id uint, xlsxData []XlsxData) Declaration {
 
 	addForProducts := []Product{}
 	updateForProducts := []Product{}

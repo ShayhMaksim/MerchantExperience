@@ -12,7 +12,7 @@ import (
 func main() {
 
 	requests.Database = processing.InitDatabase()
-	requests.Conveyor = make(map[uint64]requests.AsynchDeclaration)
+	requests.Conveyor = make(map[uint]requests.AsynchDeclaration)
 
 	r := mux.NewRouter()
 
