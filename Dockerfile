@@ -2,6 +2,7 @@ FROM golang:1.15
 
 RUN go version
 ENV GOPATH=/
+
 COPY ./ ./
 
 #install psql
