@@ -32,15 +32,27 @@ func IsCorrect(lOffer_id, lName, lPrice, lQuantity, lAvailable string) XlsxData 
 	prod := Product{}
 	//проверка на положительность чисел
 	prod.Offer_id, isCorrect = IsCorrectOfferId(lOffer_id)
+	if isCorrect == false {
+		return XlsxData{prod, false}
+	}
 
 	//проверка на отсутсвите в начале чисел (товар не должен начинаться с чисел?)
 	prod.Name, isCorrect = IsCorrectName(lName)
+	if isCorrect == false {
+		return XlsxData{prod, false}
+	}
 
 	//проверка на отсутствие знаков и букв лишних в числе с плаваюещей точкой
 	prod.Price, isCorrect = IsCorrectPrice(lPrice)
+	if isCorrect == false {
+		return XlsxData{prod, false}
+	}
 
 	//проверка на положительность чисел
 	prod.Quantity, isCorrect = IsCorrectQuantity(lQuantity)
+	if isCorrect == false {
+		return XlsxData{prod, false}
+	}
 
 	//проверка на правильной записи типа bool
 	prod.Available, isCorrect = IsCorrectAvailable(lAvailable)
