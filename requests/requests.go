@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 
 	"github.com/gorilla/mux"
 	"github.com/sargaras/MerchantExperience/processing"
@@ -15,8 +16,11 @@ import (
 )
 
 var Database *sql.DB
-var Conveyor map[uint]AsynchDeclaration // конвейер для асинхронной обработки
-var StaticKey uint = 0                  //уникальный ключ для конвейера
+var Conveyor = struct {
+	sync.RWMutex
+	m   map[uint]AsynchDeclaration // конвейер для асинхронной обработки
+	key uint                       //уникальный ключ для конвейера
+}{m: make(map[uint]AsynchDeclaration), key: 0}
 
 type InputData struct {
 	Selled_id     uint   `json:"selled_id"`
@@ -80,11 +84,12 @@ func UpdateNewData(w http.ResponseWriter, r *http.Request) {
 	structCh := make(chan struct{})
 	del := processing.Declaration{}
 
-	Conveyor[StaticKey] = AsynchDeclaration{Declaration: &del, ChStruct: &structCh, flag: false}
-	key := UniqueKey{StaticKey}
+	Conveyor.Lock()
+	Conveyor.m[Conveyor.key] = AsynchDeclaration{Declaration: &del, ChStruct: &structCh, flag: false}
+	key := UniqueKey{Conveyor.key}
 	json.NewEncoder(w).Encode(key)
-	StaticKey++
-
+	Conveyor.key++
+	Conveyor.Unlock()
 	go asynchAct(SELLER_ID, excelFileReaded, &del, &structCh)
 
 }
@@ -101,16 +106,20 @@ func GetUpdatedData(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, _ := strconv.ParseUint(vars["id"], 10, 32)
 	uintid := uint(id)
-	if val, ok := Conveyor[uintid]; ok {
+
+	if val, ok := Conveyor.m[uintid]; ok {
 		//do something here
 		if val.flag == false {
 			<-*val.ChStruct
-			Conveyor[uintid] = AsynchDeclaration{val.Declaration, nil, true}
+			Conveyor.Lock()
+			Conveyor.m[uintid] = AsynchDeclaration{val.Declaration, nil, true}
+			Conveyor.Unlock()
 		}
 		del := *val.Declaration
 		json.NewEncoder(w).Encode(del)
 		//delete(conveyor, id) // удаляем элемент из конвейера
 	}
+
 }
 
 type InputInfoData struct {
